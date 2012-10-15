@@ -1,11 +1,10 @@
 package sound;
 
-public class Lexer {
-	/**
-	 * Grammar
-	 * 
-	 * abc-tune ::= abc-header abc-music
-	
+/*
+Grammar
+
+ 	abc-tune ::= abc-header abc-music
+
 	abc-header ::= field-number comment* field-title other-fields* field-key
 	        
 	field-number ::= "X:" DIGIT+ end-of-line
@@ -69,5 +68,8 @@ public class Lexer {
 	
 	comment ::= "%" text linefeed
 	end-of-line ::= comment | linefeed
-	 */
+ */
+
+public class Lexer {
+	
 }
