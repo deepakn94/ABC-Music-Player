@@ -27,17 +27,17 @@ package sound;
  * 
  */
 public class Token {
-	public static enum HeaderTokenTypes {
+	public static enum TokenType {
+		//Header Tokens
 		TITLE,
 		COMPOSER_NAME,
 		METER,
 		TEMPO,
 		VOICE,
 		KEY,
-		INDEX_NUMBER
-	}
+		INDEX_NUMBER,
 	
-	public static enum BodyTokenTypes {
+		//Body Tokens
 		NOTE,
 		REST,
 		CHORD,
@@ -46,5 +46,21 @@ public class Token {
 		BARLINE,
 		VOICE_CHANGE,
 		END_OF_LINE
+	}
+	
+	private String tokenName;
+	private TokenType tokenType;
+	
+	public Token(String tokenName, TokenType tokenType) {
+		this.tokenName = tokenName;
+		this.tokenType = tokenType;
+	}
+	
+	public String getTokenName() {
+		return tokenName;
+	}
+	
+	public TokenType getTokenType() {
+		return tokenType;
 	}
 }
