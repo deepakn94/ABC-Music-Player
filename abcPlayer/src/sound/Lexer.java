@@ -21,7 +21,6 @@ Grammar
 	field-tempo ::= "Q:" tempo end-of-line
 	field-voice ::= "V:" text end-of-line
 	field-key ::= "K:" key end-of-line
-	
 
 	key ::= keynote ["m"]
 	keynote ::= basenote [key-accidental]
