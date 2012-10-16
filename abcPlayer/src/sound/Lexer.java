@@ -11,7 +11,7 @@ Grammar
 
 	abc-header ::= field-number comment* field-title other-fields* field-key
 	        
-	field-number ::= "X:" [0-9]+ end-of-line
+	field-number ::= "X:" DIGIT+ end-of-line
 	field-title ::= "T:" text end-of-line
 	other-fields ::= field-composer | field-default-length | field-meter 
 		| field-tempo | field-voice | comment
@@ -22,9 +22,10 @@ Grammar
 	field-voice ::= "V:" text end-of-line
 	field-key ::= "K:" key end-of-line
 	
-	key ::= keynote "m"?
+	key ::= keynote ["m"]
 	keynote ::= basenote [key-accidental]
 	key-accidental ::= "#" | "b"
+	note-length-strict ::= DIGIT+ "/" DIGIT+
 	
 	meter ::= "C" | "C|" | meter-fraction
 	meter-fraction ::= DIGIT+ "/" DIGIT+ 
@@ -43,7 +44,6 @@ Grammar
 	pitch ::= [accidental] basenote [octave]
 	octave ::= ("'"+) | (","+)
 	note-length ::= [DIGIT+] ["/" [DIGIT+]]
-	note-length-strict ::= DIGIT+ "/" DIGIT+
 	
 	accidental ::= "^" | "^^" | "_" | "__" | "="
 	
