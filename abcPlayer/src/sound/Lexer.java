@@ -7,7 +7,7 @@ Grammar
 
 	abc-header ::= field-number comment* field-title other-fields* field-key
 	        
-	field-number ::= "X:" DIGIT+ end-of-line
+	field-number ::= "X:" [0-9]+ end-of-line
 	field-title ::= "T:" text end-of-line
 	other-fields ::= field-composer | field-default-length | field-meter 
 		| field-tempo | field-voice | comment
@@ -18,10 +18,9 @@ Grammar
 	field-voice ::= "V:" text end-of-line
 	field-key ::= "K:" key end-of-line
 	
-	key ::= keynote [mode-minor]
+	key ::= keynote "m"?
 	keynote ::= basenote [key-accidental]
 	key-accidental ::= "#" | "b"
-	mode-minor ::= "m"
 	
 	meter ::= "C" | "C|" | meter-fraction
 	meter-fraction ::= DIGIT+ "/" DIGIT+ 
@@ -32,38 +31,31 @@ Grammar
 	
 	abc-music ::= abc-line+
 	abc-line ::= (element+ linefeed) | mid-tune-field | comment
-	element ::= note-element | tuplet-element | barline | nth-repeat | space 
+	playElement ::= note | chord | tuplet | rest
 	
-	note-element ::= (note | multi-note)
+	element ::= playElement | barline | nth-repeat 
 	
-	// note is either a pitch or a rest
-	note ::= note-or-rest [note-length]
-	note-or-rest ::= pitch | rest
+	note ::= pitch [note-length]
 	pitch ::= [accidental] basenote [octave]
 	octave ::= ("'"+) | (","+)
 	note-length ::= [DIGIT+] ["/" [DIGIT+]]
-	note-length-strict ::= DIGIT+ "/" DIGIT+
 	
-	; "^" is sharp, "_" is flat, and "=" is neutral
 	accidental ::= "^" | "^^" | "_" | "__" | "="
 	
 	basenote ::= "C" | "D" | "E" | "F" | "G" | "A" | "B"
 	        | "c" | "d" | "e" | "f" | "g" | "a" | "b"
 	
-	rest ::= "z"
+	rest ::= "z" [note-length]
 	
 	// tuplets
-	tuplet-element ::= tuplet-spec note-element+
-	tuplet-spec ::= "(" DIGIT 
+	tuplet ::= "(" DIGIT [ note+ ]
 	
 	// chords
-	multi-note ::= "[" note+ "]"
+	chord ::= "[" note+ "]"
 	
 	barline ::= "|" | "||" | "[|" | "|]" | ":|" | "|:"
 	nth-repeat ::= "[1" | "[2"
 	
-	; A voice field might reappear in the middle of a piece
-	; to indicate the change of a voice
 	mid-tune-field- ::= field-voice
 	
 	comment ::= "%" text linefeed
