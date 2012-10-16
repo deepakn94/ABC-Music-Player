@@ -36,6 +36,7 @@ public class Token {
 		VOICE,
 		KEY,
 		INDEX_NUMBER,
+		LENGTH,
 	
 		//Body Tokens
 		NOTE,
