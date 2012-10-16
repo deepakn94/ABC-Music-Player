@@ -1,5 +1,9 @@
 package sound;
 
+import java.util.regex.Pattern;
+
+import sound.Token.TokenType;
+
 /*
 Grammar
 
@@ -39,6 +43,7 @@ Grammar
 	pitch ::= [accidental] basenote [octave]
 	octave ::= ("'"+) | (","+)
 	note-length ::= [DIGIT+] ["/" [DIGIT+]]
+	note-length-strict ::= DIGIT+ "/" DIGIT+
 	
 	accidental ::= "^" | "^^" | "_" | "__" | "="
 	
@@ -63,5 +68,22 @@ Grammar
  */
 
 public class Lexer {
-	
+	private static final Pattern REGEX 
+	= Pattern.compile(
+		"(X:[0-9]+)" + //Field number
+		"|" + 
+		"(T:[a-zA-Z ]+)" + //Field title
+		"|" +
+		"(C:[a-zA-z ]+)" + //Composer name
+		"|" +
+		"(Q:[0-9]+)" //Tempo
+	);
+
+private static final TokenType[] TOKEN_TYPE = 
+{
+	TokenType.INDEX_NUMBER,
+	TokenType.TITLE,
+	TokenType.COMPOSER_NAME,
+	TokenType.TEMPO
+};
 }
