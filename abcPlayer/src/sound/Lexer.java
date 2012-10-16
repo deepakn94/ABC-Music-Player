@@ -78,6 +78,7 @@ public class Lexer {
     private int index;
     
     private final Matcher headerMatcher;
+    private boolean headerFlag = false;
     
 	private static final Pattern HEADER_REGEX 
 	= Pattern.compile(
@@ -121,12 +122,18 @@ public class Lexer {
     }
 
     
-    public Token next() throws IllegalArgumentException{
+    public Token next() throws IllegalArgumentException {
+    	if (headerFlag == true) {
+    		return new Token("", TokenType.EOH);
+    	}
     	String newToken = headerMatcher.group(0);
     	this.index = headerMatcher.end(); //This moves the index forward
     	
     	for (int i=1; i<= headerMatcher.groupCount(); ++i) {
     		if (headerMatcher.group(i) != null) {
+    			if (i == headerMatcher.groupCount()) {
+    				headerFlag = true;
+    			}
     			TokenType TokenType = TOKEN_TYPE[i-1];
     			return new Token(newToken, TokenType);
     		}

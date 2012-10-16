@@ -12,6 +12,8 @@ package sound;
  * Voice 
  * Key
  * Index Number
+ * Length
+ * End of Header
  * 
  * 
  * BodyTokens -->
@@ -37,6 +39,7 @@ public class Token {
 		KEY,
 		INDEX_NUMBER,
 		LENGTH,
+		EOH,
 	
 		//Body Tokens
 		NOTE,
