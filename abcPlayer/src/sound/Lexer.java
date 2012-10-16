@@ -22,6 +22,7 @@ Grammar
 	field-voice ::= "V:" text end-of-line
 	field-key ::= "K:" key end-of-line
 	
+
 	key ::= keynote ["m"]
 	keynote ::= basenote [key-accidental]
 	key-accidental ::= "#" | "b"
@@ -67,7 +68,15 @@ Grammar
 	end-of-line ::= comment | linefeed
  */
 
+/**
+ * A lexer takes a string and splits it into tokens that are meaningful to a
+ * parser.
+ */
+
 public class Lexer {
+    
+    private String str;
+    
 	private static final Pattern REGEX 
 	= Pattern.compile(
 		"(X:[0-9]+)" + //Field number
@@ -78,6 +87,22 @@ public class Lexer {
 		"|" +
 		"(Q:[0-9]+)" //Tempo
 	);
+	
+	/**
+     * Creates the lexer over the passed string. Sets the string and string length variables.
+     * @param string The string to tokenize.
+     */
+    public Lexer(String string) {
+        // Replace all runs of whitespace with a single space
+        this.str = string.replaceAll("\\s+", " ");;       
+    }
+    
+    Token.TokenType type;
+    public Token next() throws IllegalArgumentException{
+        // Match pattern here
+        throw new UnsupportedOperationException();
+    }
+	
 
 private static final TokenType[] TOKEN_TYPE = 
 {
