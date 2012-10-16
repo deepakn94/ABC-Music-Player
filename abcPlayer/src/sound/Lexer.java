@@ -22,6 +22,7 @@ Grammar
 	field-voice ::= "V:" text end-of-line
 	field-key ::= "K:" key end-of-line
 	
+	note-length-strict ::= DIGIT+ "/" DIGIT+
 	key ::= keynote "m"?
 	keynote ::= basenote [key-accidental]
 	key-accidental ::= "#" | "b"
@@ -43,7 +44,6 @@ Grammar
 	pitch ::= [accidental] basenote [octave]
 	octave ::= ("'"+) | (","+)
 	note-length ::= [DIGIT+] ["/" [DIGIT+]]
-	note-length-strict ::= DIGIT+ "/" DIGIT+
 	
 	accidental ::= "^" | "^^" | "_" | "__" | "="
 	
