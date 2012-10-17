@@ -80,8 +80,7 @@ public class Lexer {
     private final Matcher headerMatcher;
     private boolean headerFlag = false;
     
-	private static final Pattern HEADER_REGEX 
-	= Pattern.compile(
+	private static final Pattern HEADER_REGEX = Pattern.compile(
 		"(X\\s*:\\s*[0-9]+)" + //Field number
 		"|" + 
 		"(T\\s*:.+)" + //Field title
@@ -99,7 +98,19 @@ public class Lexer {
 		"(K\\s*:\\s*[a-gA-G][#b]?m?)" //Key
 	);
 	
-	private static final TokenType[] TOKEN_TYPE = 
+	private static final String NOTE_EXPRESSION = "((__?|\\^\\^?|=)?[A-Ga-g]('+|,+)?([0-9]+/[0-9]+)?)";
+	
+	private static final Pattern BODY_REGEX = Pattern.compile(
+		"(z)" + //Rest
+		"|" +
+		NOTE_EXPRESSION + //Note
+		"|" +
+		"(\\[" + NOTE_EXPRESSION + "+\\])" + //Chord
+		"|" +
+		"(\\([2-4]" + NOTE_EXPRESSION + "*)" //Tuplet  
+	);
+	
+	private static final TokenType[] HEADER_TOKEN_TYPE = 
 	{
 		TokenType.INDEX_NUMBER,
 		TokenType.TITLE,
@@ -109,6 +120,13 @@ public class Lexer {
 		TokenType.METER,
 		TokenType.VOICE,
 		TokenType.KEY
+	};
+	
+	private static final TokenType[] BODY_TOKEN_TYPE = 
+	{
+		TokenType.REST,
+		TokenType.NOTE,
+		TokenType.CHORD
 	};
 	
 	/**
@@ -140,7 +158,7 @@ public class Lexer {
     			if (i == headerMatcher.groupCount()) {
     				headerFlag = true;
     			}
-    			TokenType TokenType = TOKEN_TYPE[i-1];
+    			TokenType TokenType = HEADER_TOKEN_TYPE[i-1];
     			return new Token(newToken, TokenType);
     		}
     	}
