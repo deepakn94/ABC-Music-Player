@@ -57,5 +57,81 @@ public class SequencePlayerTest {
             fail(e.toString());
         }
 	}
+	
+	@Test
+    public void testSamplePiece2() {
+        SequencePlayer player;
+        try {
+            
+            player = new SequencePlayer(200, 12);
+    
+            player.addNote(new Pitch('F').toMidiNote(), 0, 12);
+            player.addNote(new Pitch('E').transpose(Pitch.OCTAVE).toMidiNote(), 12, 12);
+            player.addNote(new Pitch('F').toMidiNote(), 24, 9);
+            player.addNote(new Pitch('E').transpose(Pitch.OCTAVE).toMidiNote(), 33, 3);
+            // Rest
+            player.addNote(new Pitch('F').toMidiNote(), 24, 9);
+            player.addNote(new Pitch('E').transpose(Pitch.OCTAVE).toMidiNote(), 33, 3);
+            // Rest
+            player.addNote(new Pitch('F').toMidiNote(), 24, 9);
+            player.addNote(new Pitch('C').transpose(Pitch.OCTAVE).toMidiNote(), 33, 3);
+            player.addNote(new Pitch('F').toMidiNote(), 24, 9);
+            player.addNote(new Pitch('E').transpose(Pitch.OCTAVE).toMidiNote(), 33, 3);
+            
+            //
+            
+            player.addNote(new Pitch('G').toMidiNote(), 24, 9);
+            player.addNote(new Pitch('B').transpose(Pitch.OCTAVE).toMidiNote(), 33, 3);
+            player.addNote(new Pitch('G').transpose(Pitch.OCTAVE).toMidiNote(), 36, 12);
+            // Rest
+        
+            player.addNote(new Pitch('G').toMidiNote(), 48, 9);
+            
+            //Rest
+            
+            //
+            
+            player.addNote(new Pitch('C').transpose(Pitch.OCTAVE).toMidiNote(), 57, 3);          
+            player.addNote(new Pitch('G').toMidiNote(), 60, 9);
+            //Rest
+            player.addNote(new Pitch('E').toMidiNote(), 69, 3);
+            
+            
+            //
+            
+            player.addNote(new Pitch('E').toMidiNote(), 72, 24);
+            player.addNote(new Pitch('A').toMidiNote(), 72, 24);
+            player.addNote(new Pitch('B').transpose(Pitch.OCTAVE).toMidiNote(), 72, 24);
+            player.addNote(new Pitch('B').transpose(Pitch.OCTAVE).toMidiNote(), 72, 24);
+            player.addNote(new Pitch('A').toMidiNote(), 72, 24);
+                       
+            //          
+            player.addNote(new Pitch('G').toMidiNote(), 96, 4);
+            player.addNote(new Pitch('E').transpose(Pitch.OCTAVE).toMidiNote(), 100, 4);
+            player.addNote(new Pitch('G').transpose(Pitch.OCTAVE).toMidiNote(), 104, 4);
+            player.addNote(new Pitch('C').transpose(2*Pitch.OCTAVE).toMidiNote(), 104, 4);
+            player.addNote(new Pitch('F').transpose(Pitch.OCTAVE).toMidiNote(), 104, 4);
+            player.addNote(new Pitch('G').transpose(Pitch.OCTAVE).toMidiNote(), 104, 4);
+            
+            //
+            
+            // Rest
+            player.addNote(new Pitch('E').transpose(Pitch.OCTAVE).toMidiNote(), 104, 4);
+            player.addNote(new Pitch('C').transpose(Pitch.OCTAVE).toMidiNote(), 104, 4);
+            player.addNote(new Pitch('D').transpose(Pitch.OCTAVE).toMidiNote(), 104, 4);
+            player.addNote(new Pitch('B').transpose(Pitch.OCTAVE).toMidiNote(), 104, 4);
+            
+            // Rest
+
+            System.out.println(player);
+            
+            player.play();
+            
+        } catch (MidiUnavailableException e) {
+            fail(e.toString());
+        } catch (InvalidMidiDataException e) {
+            fail(e.toString());
+        }
+    }
 
 }
