@@ -82,21 +82,21 @@ public class Lexer {
     
 	private static final Pattern HEADER_REGEX 
 	= Pattern.compile(
-		"(X: [0-9]+)" + //Field number
+		"(X\\s*:\\s*[0-9]+)" + //Field number
 		"|" + 
-		"(T:[\\p{Alnum} \\.]+)" + //Field title
+		"(T\\s*:.+)" + //Field title
 		"|" +
-		"(C:[\\p{Alnum} \\.]+)" + //Composer name
+		"(C\\s*:.+)" + //Composer name
 		"|" +
-		"(Q:[0-9]+)" + //Tempo
+		"(Q\\s*:\\s*[0-9]+)" + //Tempo
 		"|" +
-		"(L:[0-9]+/[0-9]+)" + //Default length
+		"(L\\s*:\\s*[0-9]+/[0-9]+)" + //Default length
 		"|" +
-		"(M:C\\||M:C|M:[0-9]+/[0-9]+)" + //Meter
+		"(M\\s*:\\s*C\\||M:C|M:[0-9]+/[0-9]+)" + //Meter
 		"|" +
-		"(V:[0-9]+)" + //Voice
+		"(V\\s*:\\s*[0-9]+)" + //Voice
 		"|" +
-		"(K:[a-gA-G][#b]?m?)" //Key
+		"(K\\s*:\\s*[a-gA-G][#b]?m?)" //Key
 	);
 	
 	private static final TokenType[] TOKEN_TYPE = 
@@ -117,7 +117,7 @@ public class Lexer {
      */
     public Lexer(String string) {
         // Replace all runs of whitespace with a single space
-        this.str = string.replaceAll("\\s+", " ");;       
+        this.str = string.replaceAll("\\s+", " ");       
         this.headerMatcher = HEADER_REGEX.matcher(str);
     }
 
@@ -131,7 +131,7 @@ public class Lexer {
     		throw new RuntimeException("Lexer exception");
     	}
     	
-    	String newToken = headerMatcher.group(0);
+    	String newToken = headerMatcher.group(0).replaceAll("[A-Za ]+:\\s*", "");
     	System.out.println(newToken);
     	this.index = headerMatcher.end(); //This moves the index forward
     	
