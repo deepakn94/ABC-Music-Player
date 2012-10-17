@@ -75,18 +75,18 @@ Grammar
 public class Lexer {
     
     private String str;
-    private int index;
+    private int index = 0;
     
     private final Matcher headerMatcher;
     private boolean headerFlag = false;
     
 	private static final Pattern HEADER_REGEX 
 	= Pattern.compile(
-		"(X:[0-9]+)" + //Field number
+		"(X: [0-9]+)" + //Field number
 		"|" + 
-		"(T:[a-zA-Z ]+)" + //Field title
+		"(T:[\\p{Alnum} \\.]+)" + //Field title
 		"|" +
-		"(C:[a-zA-z ]+)" + //Composer name
+		"(C:[\\p{Alnum} \\.]+)" + //Composer name
 		"|" +
 		"(Q:[0-9]+)" + //Tempo
 		"|" +
@@ -94,7 +94,7 @@ public class Lexer {
 		"|" +
 		"(M:C\\||M:C|M:[0-9]+/[0-9]+)" + //Meter
 		"|" +
-		"(V:[a-zA-z ]+)" + //Voice
+		"(V:[0-9]+)" + //Voice
 		"|" +
 		"(K:[a-gA-G][#b]?m?)" //Key
 	);
@@ -113,12 +113,12 @@ public class Lexer {
 	
 	/**
      * Creates the lexer over the passed string. Sets the string and string length variables.
-     * @param string The string to tokenize.
+     * @param string The string to tokenize. String represents a single line in the abc file.
      */
     public Lexer(String string) {
         // Replace all runs of whitespace with a single space
         this.str = string.replaceAll("\\s+", " ");;       
-        this.headerMatcher = HEADER_REGEX.matcher(string);
+        this.headerMatcher = HEADER_REGEX.matcher(str);
     }
 
     
@@ -126,7 +126,13 @@ public class Lexer {
     	if (headerFlag == true) {
     		return new Token("", TokenType.EOH);
     	}
+    	
+    	if (! headerMatcher.find(index)) {
+    		throw new RuntimeException("Lexer exception");
+    	}
+    	
     	String newToken = headerMatcher.group(0);
+    	System.out.println(newToken);
     	this.index = headerMatcher.end(); //This moves the index forward
     	
     	for (int i=1; i<= headerMatcher.groupCount(); ++i) {
