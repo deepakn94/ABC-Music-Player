@@ -81,7 +81,7 @@ public class SequencePlayerTest {
             //
             
             player.addNote(new Pitch('G').toMidiNote(), 48, 12);
-            player.addNote(new Pitch('B').transpose(Pitch.OCTAVE).toMidiNote(), 48, 12);
+            player.addNote(new Pitch('B').toMidiNote(), 48, 12);
             player.addNote(new Pitch('G').transpose(Pitch.OCTAVE).toMidiNote(), 48, 12);
             // Rest
         
@@ -101,15 +101,15 @@ public class SequencePlayerTest {
             
             player.addNote(new Pitch('E').toMidiNote(), 144, 6);
             player.addNote(new Pitch('A').toMidiNote(), 150, 12);
-            player.addNote(new Pitch('B').transpose(Pitch.OCTAVE).toMidiNote(), 162, 12);
-            player.addNote(new Pitch('B').transpose(Pitch.OCTAVE-1).toMidiNote(), 174, 6);
+            player.addNote(new Pitch('B').toMidiNote(), 162, 12);
+            player.addNote(new Pitch('B').transpose(-1).toMidiNote(), 174, 6);
             player.addNote(new Pitch('A').toMidiNote(), 180, 12);
                        
             //          
             player.addNote(new Pitch('G').toMidiNote(), 192, 8);
             player.addNote(new Pitch('E').transpose(Pitch.OCTAVE).toMidiNote(), 200, 8);
             player.addNote(new Pitch('G').transpose(Pitch.OCTAVE).toMidiNote(), 208, 8);
-            player.addNote(new Pitch('C').transpose(2*Pitch.OCTAVE).toMidiNote(), 216, 12);
+            player.addNote(new Pitch('A').transpose(Pitch.OCTAVE).toMidiNote(), 216, 12);
             player.addNote(new Pitch('F').transpose(Pitch.OCTAVE).toMidiNote(), 228, 6);
             player.addNote(new Pitch('G').transpose(Pitch.OCTAVE).toMidiNote(), 234, 6);
             
@@ -119,8 +119,8 @@ public class SequencePlayerTest {
             player.addNote(new Pitch('E').transpose(Pitch.OCTAVE).toMidiNote(), 246, 12);
             player.addNote(new Pitch('C').transpose(Pitch.OCTAVE).toMidiNote(), 258, 6);
             player.addNote(new Pitch('D').transpose(Pitch.OCTAVE).toMidiNote(), 264, 6);
-            player.addNote(new Pitch('B').transpose(Pitch.OCTAVE).toMidiNote(), 270, 9);
-            
+            player.addNote(new Pitch('B').toMidiNote(), 270, 9);
+
             // Rest
 
             System.out.println(player);
