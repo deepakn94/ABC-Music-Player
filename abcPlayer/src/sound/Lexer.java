@@ -1,5 +1,6 @@
 package sound;
 
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import sound.Token.TokenType;
@@ -11,7 +12,7 @@ Grammar
 
 	abc-header ::= field-number comment* field-title other-fields* field-key
 	        
-	field-number ::= "X:" [0-9]+ end-of-line
+	field-number ::= "X:" DIGIT+ end-of-line
 	field-title ::= "T:" text end-of-line
 	other-fields ::= field-composer | field-default-length | field-meter 
 		| field-tempo | field-voice | comment
@@ -21,10 +22,11 @@ Grammar
 	field-tempo ::= "Q:" tempo end-of-line
 	field-voice ::= "V:" text end-of-line
 	field-key ::= "K:" key end-of-line
-	
-	key ::= keynote "m"?
+
+	key ::= keynote ["m"]
 	keynote ::= basenote [key-accidental]
 	key-accidental ::= "#" | "b"
+	note-length-strict ::= DIGIT+ "/" DIGIT+
 	
 	meter ::= "C" | "C|" | meter-fraction
 	meter-fraction ::= DIGIT+ "/" DIGIT+ 
@@ -43,7 +45,6 @@ Grammar
 	pitch ::= [accidental] basenote [octave]
 	octave ::= ("'"+) | (","+)
 	note-length ::= [DIGIT+] ["/" [DIGIT+]]
-	note-length-strict ::= DIGIT+ "/" DIGIT+
 	
 	accidental ::= "^" | "^^" | "_" | "__" | "="
 	
@@ -71,12 +72,15 @@ Grammar
  * A lexer takes a string and splits it into tokens that are meaningful to a
  * parser.
  */
-
 public class Lexer {
     
     private String str;
+    private int index;
     
-	private static final Pattern REGEX 
+    private final Matcher headerMatcher;
+    private boolean headerFlag = false;
+    
+	private static final Pattern HEADER_REGEX 
 	= Pattern.compile(
 		"(X:[0-9]+)" + //Field number
 		"|" + 
@@ -84,8 +88,28 @@ public class Lexer {
 		"|" +
 		"(C:[a-zA-z ]+)" + //Composer name
 		"|" +
-		"(Q:[0-9]+)" //Tempo
+		"(Q:[0-9]+)" + //Tempo
+		"|" +
+		"(L:[0-9]+/[0-9]+)" + //Default length
+		"|" +
+		"(M:C\\||M:C|M:[0-9]+/[0-9]+)" + //Meter
+		"|" +
+		"(V:[a-zA-z ]+)" + //Voice
+		"|" +
+		"(K:[a-gA-G][#b]?m?)" //Key
 	);
+	
+	private static final TokenType[] TOKEN_TYPE = 
+	{
+		TokenType.INDEX_NUMBER,
+		TokenType.TITLE,
+		TokenType.COMPOSER_NAME,
+		TokenType.TEMPO,
+		TokenType.LENGTH,
+		TokenType.METER,
+		TokenType.VOICE,
+		TokenType.KEY
+	};
 	
 	/**
      * Creates the lexer over the passed string. Sets the string and string length variables.
@@ -94,20 +118,28 @@ public class Lexer {
     public Lexer(String string) {
         // Replace all runs of whitespace with a single space
         this.str = string.replaceAll("\\s+", " ");;       
+        this.headerMatcher = HEADER_REGEX.matcher(string);
     }
-    
-    Token.TokenType type;
-    public Token next() throws IllegalArgumentException{
-        // Match pattern here
-        throw new UnsupportedOperationException();
-    }
-	
 
-private static final TokenType[] TOKEN_TYPE = 
-{
-	TokenType.INDEX_NUMBER,
-	TokenType.TITLE,
-	TokenType.COMPOSER_NAME,
-	TokenType.TEMPO
-};
+    
+    public Token next() throws IllegalArgumentException {
+    	if (headerFlag == true) {
+    		return new Token("", TokenType.EOH);
+    	}
+    	String newToken = headerMatcher.group(0);
+    	this.index = headerMatcher.end(); //This moves the index forward
+    	
+    	for (int i=1; i<= headerMatcher.groupCount(); ++i) {
+    		if (headerMatcher.group(i) != null) {
+    			if (i == headerMatcher.groupCount()) {
+    				headerFlag = true;
+    			}
+    			TokenType TokenType = TOKEN_TYPE[i-1];
+    			return new Token(newToken, TokenType);
+    		}
+    	}
+    	
+    	//Should not reach here
+    	throw new RuntimeException("Regex error - Should not reach here.");
+    }
 }
