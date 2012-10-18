@@ -39,17 +39,18 @@ public class Token {
 		KEY,
 		INDEX_NUMBER,
 		LENGTH,
-		EOH,
 	
 		//Body Tokens
 		NOTE,
 		REST,
 		CHORD,
-		TUPLET,
+		DOUBLET,
+		TRIPLET,
+		QUADRUPLET,
 		REPEAT,
 		BARLINE,
 		VOICE_CHANGE,
-		END_OF_LINE
+		END_OF_PIECE
 	}
 	
 	private String tokenName;

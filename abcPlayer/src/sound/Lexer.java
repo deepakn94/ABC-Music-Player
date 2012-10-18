@@ -77,10 +77,11 @@ public class Lexer {
     private String str;
     private int index = 0;
     
-    private final Matcher headerMatcher;
-    private boolean headerFlag = false;
+    private final Matcher matcher;
     
-	private static final Pattern HEADER_REGEX = Pattern.compile(
+    private static final String NOTE_EXPRESSION = "((__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+)?)";
+    
+	private static final Pattern REGEX = Pattern.compile(
 		"(X\\s*:\\s*[0-9]+)" + //Field number
 		"|" + 
 		"(T\\s*:.+)" + //Field title
@@ -93,24 +94,28 @@ public class Lexer {
 		"|" +
 		"(M\\s*:\\s*C\\||M:C|M:[0-9]+/[0-9]+)" + //Meter
 		"|" +
-		"(V\\s*:\\s*[0-9]+)" + //Voice
+		"(V\\s*:.+)" + //Voice
 		"|" +
-		"(K\\s*:\\s*[a-gA-G][#b]?m?)" //Key
-	);
-	
-	private static final String NOTE_EXPRESSION = "((__?|\\^\\^?|=)?[A-Ga-g]('+|,+)?([0-9]+/[0-9]+)?)";
-	
-	private static final Pattern BODY_REGEX = Pattern.compile(
-		"(z)" + //Rest
+		"(K\\s*:\\s*[a-gA-G][#b]?m?)" + //Key
+		"|" +
+		"(z([0-9]+/[0-9]+)?)" + //Rest
 		"|" +
 		NOTE_EXPRESSION + //Note
 		"|" +
 		"(\\[" + NOTE_EXPRESSION + "+\\])" + //Chord
 		"|" +
-		"(\\([2-4]" + NOTE_EXPRESSION + "*)" //Tuplet  
+		"(\\(2" + NOTE_EXPRESSION + "{2})" + //Doublet
+		"|" +
+		"(\\(3" + NOTE_EXPRESSION + "{3})" + //Triplet
+		"|" +
+		"(\\(4" + NOTE_EXPRESSION + "{4})" + //Quadruplet
+		"|" +
+		"(\\|:|:\\||\\|\\]|\\|\\|?|\\[\\||)" + //Barline
+		"|" +
+		"(\\[[12])" //n-th repeat
 	);
 	
-	private static final TokenType[] HEADER_TOKEN_TYPE = 
+	private static final TokenType[] TOKEN_TYPE = 
 	{
 		TokenType.INDEX_NUMBER,
 		TokenType.TITLE,
@@ -119,14 +124,15 @@ public class Lexer {
 		TokenType.LENGTH,
 		TokenType.METER,
 		TokenType.VOICE,
-		TokenType.KEY
-	};
-	
-	private static final TokenType[] BODY_TOKEN_TYPE = 
-	{
+		TokenType.KEY,
 		TokenType.REST,
 		TokenType.NOTE,
-		TokenType.CHORD
+		TokenType.CHORD,
+		TokenType.DOUBLET,
+		TokenType.TRIPLET,
+		TokenType.QUADRUPLET,
+		TokenType.BARLINE,
+		TokenType.REPEAT
 	};
 	
 	/**
@@ -136,34 +142,32 @@ public class Lexer {
     public Lexer(String string) {
         // Replace all runs of whitespace with a single space
         this.str = string.replaceAll("\\s+", " ");       
-        this.headerMatcher = HEADER_REGEX.matcher(str);
+        this.matcher = REGEX.matcher(str);
     }
 
     
     public Token next() throws IllegalArgumentException {
-    	if (headerFlag == true) {
-    		return new Token("", TokenType.EOH);
-    	}
+    	if (index >= str.length())
+    		return new Token("", TokenType.END_OF_PIECE);
     	
-    	if (! headerMatcher.find(index)) {
+    	if (! matcher.find(index)) {
     		throw new RuntimeException("Lexer exception");
     	}
     	
-    	String newToken = headerMatcher.group(0).replaceAll("[A-Za ]+:\\s*", "");
+    	String newToken = matcher.group(0).replaceAll("[A-Z ]+:\\s*", "");
     	System.out.println(newToken);
-    	this.index = headerMatcher.end(); //This moves the index forward
+    	this.index = matcher.end(); //This moves the index forward
     	
-    	for (int i=1; i<= headerMatcher.groupCount(); ++i) {
-    		if (headerMatcher.group(i) != null) {
-    			if (i == headerMatcher.groupCount()) {
-    				headerFlag = true;
-    			}
-    			TokenType TokenType = HEADER_TOKEN_TYPE[i-1];
+    	System.out.println(matcher.groupCount());
+    	for (int i=1; i<= matcher.groupCount(); ++i) {
+    		if (matcher.group(i) != null) {
+    			TokenType TokenType = TOKEN_TYPE[i-1];
     			return new Token(newToken, TokenType);
     		}
     	}
     	
     	//Should not reach here
     	throw new RuntimeException("Regex error - Should not reach here.");
+	    
     }
 }

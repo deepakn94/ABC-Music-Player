@@ -78,18 +78,13 @@ public class LexerTest {
 	}
 	
 	@Test
-	public void testKeyEOH() {
+	public void testKey() {
 		Lexer testLexer = new Lexer("K :Am");
 		TokenType expectedTokenType = TokenType.KEY;
 		String expectedTokenName ="Am";
 		Token currentToken = testLexer.next();
 		assertEquals(expectedTokenType, currentToken.getTokenType());
 		assertEquals(expectedTokenName, currentToken.getTokenName());
-		
-		Token nextToken = testLexer.next();
-		TokenType nextExpectedTokenType = TokenType.EOH;
-		assertEquals(nextExpectedTokenType, nextToken.getTokenType());
-		assertEquals("", nextToken.getTokenName());
 	}
 	
 }
