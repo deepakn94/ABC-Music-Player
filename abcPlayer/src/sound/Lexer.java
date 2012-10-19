@@ -79,40 +79,41 @@ public class Lexer {
     
     private final Matcher matcher;
     
-    private static final String NOTE_EXPRESSION = "((__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+)?)";
+    private static final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+|[0-9]+)?";
     
 	private static final Pattern REGEX = Pattern.compile(
-		"(X\\s*:\\s*[0-9]+)" + //Field number
+		"^(X\\s*:\\s*[0-9]+\n)" + //Field number
 		"|" + 
-		"(T\\s*:.+)" + //Field title
+		"(T\\s*:[A-Za-z .,0-9]+\n)" + //Field title
 		"|" +
-		"(C\\s*:.+)" + //Composer name
+		"(C\\s*:[A-Za-z .,0-9]+\n)" + //Composer name
 		"|" +
-		"(Q\\s*:\\s*[0-9]+)" + //Tempo
+		"(Q\\s*:\\s*[0-9]+\n)" + //Tempo
 		"|" +
-		"(L\\s*:\\s*[0-9]+/[0-9]+)" + //Default length
+		"(L\\s*:\\s*[0-9]+/[0-9]+\n)" + //Default length
 		"|" +
-		"(M\\s*:\\s*C\\||M:C|M:[0-9]+/[0-9]+)" + //Meter
+		"(M\\s*:\\s*C\\||M:C|M:[0-9]+/[0-9]+\n)" + //Meter
 		"|" +
-		"(V\\s*:.+)" + //Voice
+		"(V\\s*:[A-Za-z .,0-9]+\n)" + //Voice
 		"|" +
-		"(K\\s*:\\s*[a-gA-G][#b]?m?)" + //Key
+		"(K\\s*:\\s*[a-gA-G][#b]?m?\n)" + //Key
 		"|" +
-		"(z([0-9]+/[0-9]+)?)" + //Rest
+		"(?<Rest>z([0-9]+/[0-9]+|[0-9]+)?)" + //Rest
 		"|" +
-		NOTE_EXPRESSION + //Note
+		"(?<NoteExpression>(" + NOTE_EXPRESSION + ")\\s*)" +//Note
 		"|" +
-		"(\\[" + NOTE_EXPRESSION + "+\\])" + //Chord
+		"(?<Chord>\\[(" + NOTE_EXPRESSION + ")+\\]([0-9]+/[0-9]+)?\\s*)" + //Chord
 		"|" +
-		"(\\(2" + NOTE_EXPRESSION + "{2})" + //Doublet
+		"(?<Doublet>\\(2(" + NOTE_EXPRESSION + "){2}\\s*)" + //Doublet
 		"|" +
-		"(\\(3" + NOTE_EXPRESSION + "{3})" + //Triplet
+		"(?<Triplet>\\(3(" + NOTE_EXPRESSION + "){3}\\s*)" + //Triplet
 		"|" +
-		"(\\(4" + NOTE_EXPRESSION + "{4})" + //Quadruplet
+		"(?<Quadruplet>\\(4(" + NOTE_EXPRESSION + "){4}\\s*)" + //Quadruplet
 		"|" +
-		"(\\|:|:\\||\\|\\]|\\|\\|?|\\[\\||)" + //Barline
+		"(?<Barline>\\|:|:\\||\\|\\]|\\|\\|?|\\[\\|\\s*)" + //Barline
 		"|" +
-		"(\\[[12])" //n-th repeat
+		"(?<Repeat>\\[[12]\\s*)" //n-th repeat
+		, Pattern.DOTALL
 	);
 	
 	private static final TokenType[] TOKEN_TYPE = 
@@ -124,47 +125,84 @@ public class Lexer {
 		TokenType.LENGTH,
 		TokenType.METER,
 		TokenType.VOICE,
-		TokenType.KEY,
-		TokenType.REST,
-		TokenType.NOTE,
-		TokenType.CHORD,
-		TokenType.DOUBLET,
-		TokenType.TRIPLET,
-		TokenType.QUADRUPLET,
-		TokenType.BARLINE,
-		TokenType.REPEAT
+		TokenType.KEY
 	};
 	
 	/**
      * Creates the lexer over the passed string. Sets the string and string length variables.
      * @param string The string to tokenize. String represents a single line in the abc file.
      */
-    public Lexer(String string) {
-        // Replace all runs of whitespace with a single space
-        this.str = string.replaceAll("\\s+", " ");       
+    public Lexer(String string) { 
+    	this.str = string;
         this.matcher = REGEX.matcher(str);
     }
-
     
     public Token next() throws IllegalArgumentException {
     	if (index >= str.length())
     		return new Token("", TokenType.END_OF_PIECE);
     	
     	if (! matcher.find(index)) {
-    		throw new RuntimeException("Lexer exception");
+    		return new Token("", TokenType.END_OF_PIECE);
     	}
-    	
-    	String newToken = matcher.group(0).replaceAll("[A-Z ]+:\\s*", "");
-    	System.out.println(newToken);
+    	String newToken = matcher.group(0);
+    	newToken = newToken.replaceAll("[A-Z ]+:\\s*", "").replace("\n", "");
     	this.index = matcher.end(); //This moves the index forward
     	
-    	System.out.println(matcher.groupCount());
-    	for (int i=1; i<= matcher.groupCount(); ++i) {
+    	for (int i=1; i<= TOKEN_TYPE.length; ++i) {
     		if (matcher.group(i) != null) {
+    			//System.out.println(newToken);
     			TokenType TokenType = TOKEN_TYPE[i-1];
     			return new Token(newToken, TokenType);
     		}
     	}
+    	
+    	if (matcher.group("NoteExpression")!= null) {
+			//System.out.println(newToken);
+			newToken = newToken.trim();
+			return new Token(newToken, TokenType.NOTE);
+		} 
+    	
+    	else if (matcher.group("Rest")!=null) {
+			//System.out.println(newToken);
+			newToken = newToken.trim();
+			return new Token(newToken, TokenType.REST);
+		} 
+    	
+    	else if (matcher.group("Chord")!=null) {
+			//System.out.println(newToken);
+			newToken = newToken.trim();
+			return new Token(newToken, TokenType.CHORD);
+		} 
+    	
+    	else if (matcher.group("Doublet")!=null) {
+			//System.out.println(newToken);
+			newToken = newToken.trim();
+			return new Token(newToken, TokenType.DOUBLET);
+		} 
+    	
+    	else if (matcher.group("Triplet")!=null) {
+			//System.out.println(newToken);
+			newToken = newToken.trim();
+			return new Token(newToken, TokenType.TRIPLET);
+		} 
+    	
+    	else if (matcher.group("Quadruplet")!=null) {
+			//System.out.println(newToken);
+			newToken = newToken.trim();
+			return new Token(newToken, TokenType.QUADRUPLET);
+		} 
+    	
+    	else if (matcher.group("Barline")!=null) {
+			newToken = newToken.trim();
+			//System.out.println(newToken);
+			return new Token(newToken, TokenType.BARLINE);
+		}
+    	
+    	else if (matcher.group("Repeat")!=null) {
+			newToken = newToken.trim();
+			//System.out.println(newToken);
+			return new Token(newToken, TokenType.REPEAT);
+		}
     	
     	//Should not reach here
     	throw new RuntimeException("Regex error - Should not reach here.");

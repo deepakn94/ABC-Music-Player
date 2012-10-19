@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import sound.Token.TokenType;
+
 public class File_Reader {
 	private String filename;
 	
@@ -40,10 +42,18 @@ public class File_Reader {
 		String file_name = "C:\\Users\\Deepak\\Documents\\git\\project1\\deepakn-yygu-arjunnar\\abcPlayer\\sample_abc\\invention.abc";
 		File_Reader file_reader = new File_Reader(file_name);
 		try {
-			System.out.println(file_reader.readContent());
+			String content = file_reader.readContent();
+			//System.out.println(content);
+			Lexer newLexer = new Lexer(content);
+			Token currentToken = newLexer.next();
+			while (currentToken.getTokenType()!=TokenType.END_OF_PIECE) {
+				System.out.println(currentToken.getTokenName() + ":" + currentToken.getTokenType());
+				currentToken = newLexer.next();
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 	}
 }
