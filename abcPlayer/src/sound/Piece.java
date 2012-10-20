@@ -1,25 +1,28 @@
 package sound;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 public class Piece 
 {
     public static HashMap<Key, HashSet<SimpleNote>> keyMappings = 
             new HashMap<Key, HashSet<SimpleNote>>();
     
-    public Piece()
+    private final List<Voice> voices;
+    
+    public Piece(List<Voice> voices)
     {
         initializeKeyMappings();
+        this.voices = new ArrayList<Voice>(voices); 
     }
     
-    /*
-     * G - F#
-     * D - F#, C# 
-     * A - F#, C#, G#
-     * E - F#, C#, G#, D#
-     * B - C#, D#, F#, G#, A#, 
-     */
+    public List<Voice> getVoices()
+    {
+        return new ArrayList<Voice>(voices);
+    }
+    
     private static void initializeKeyMappings()
     {   
         //C major and A Minor 
@@ -71,7 +74,7 @@ public class Piece
         set.add(new SimpleNote(NoteType.D, Accidental.SHARP));
         set.add(new SimpleNote(NoteType.F, Accidental.SHARP));
         set.add(new SimpleNote(NoteType.G, Accidental.SHARP));
-        keyMappings.put(Key.E_MAJOR, set); 
+        keyMappings.put(Key.E_MAJOR, set);
         
         //F minor
         set = new HashSet<SimpleNote>(); 

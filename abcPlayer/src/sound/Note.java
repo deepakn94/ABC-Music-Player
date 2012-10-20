@@ -7,6 +7,14 @@ public class Note implements Playable
     private final int octavesAboveMiddleC; 
     private final RatNum noteLength; 
     
+    public Note(NoteType noteBase, int octaves, RatNum noteLength)
+    {
+        this.noteBase = noteBase; 
+        this.octavesAboveMiddleC = octaves; 
+        this.noteLength = noteLength; 
+        this.accidental = Accidental.ABSENT; 
+    }
+    
     public Note(NoteType noteBase, int octaves, RatNum noteLength, Accidental accidental)
     {
         this.noteBase = noteBase; 
