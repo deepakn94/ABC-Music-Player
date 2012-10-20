@@ -39,8 +39,7 @@ public class ABCFileReader {
 	}
 	
 	public static void main(String[] args) {
-		//String file_name = "C:\\Users\\Deepak\\Documents\\git\\project1\\deepakn-yygu-arjunnar\\abcPlayer\\sample_abc\\fur_elise.abc";
-	    String file_name = "sample_abc/piece1.abc";
+	    String file_name = "sample_abc/fur_elise.abc";
 		ABCFileReader file_reader = new ABCFileReader(file_name);
 		try {
 			String content = file_reader.readContent();

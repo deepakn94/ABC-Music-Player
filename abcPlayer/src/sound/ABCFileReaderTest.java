@@ -10,7 +10,6 @@ public class ABCFileReaderTest {
 
 	@Test
 	public void testReadContent() {
-		//String file_name = "C:\\Users\\Deepak\\Documents\\git\\project1\\deepakn-yygu-arjunnar\\abcPlayer\\sample_abc\\piece1.abc";
 	    String file_name = "sample_abc/piece1.abc";
 		ABCFileReader file_reader = new ABCFileReader(file_name);
 		String actualString = "";
