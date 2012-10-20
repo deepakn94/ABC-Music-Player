@@ -24,46 +24,54 @@ public class Parser {
     }
     
     private Accidental getAccidental(String noteToken) {
-    	String ACCIDENTAL_REGEX = "\\^\\^?|__?|=";
+    	String ACCIDENTAL_REGEX = "((__)|(_)|(\\^\\^)|(\\^)|(=))";
     	Pattern accidentalPattern = Pattern.compile(ACCIDENTAL_REGEX);
     	Matcher accidentalMatcher = accidentalPattern.matcher(noteToken);
-    	String accidental = accidentalMatcher.find() ? accidentalMatcher.group(0) : "";
-    	switch (accidental) {
-    		case "_": return Accidental.FLAT; 
-    		case "__": return Accidental.DOUBLEFLAT;
-    		case "^": return Accidental.SHARP;
-    		case "^^": return Accidental.DOUBLESHARP;
-    		case "=": return Accidental.NATURAL;
+    	
+    	int groupMatch = 0;
+    	for (int i=1; i<=accidentalMatcher.groupCount(); ++i) {
+    		if (accidentalMatcher.group(i) != null) {
+    			groupMatch = i;
+    			break;
+    		}
+    	}
+    	
+    	switch (groupMatch) {
+    		case 1: return Accidental.FLAT; 
+    		case 2: return Accidental.DOUBLEFLAT;
+    		case 3: return Accidental.SHARP;
+    		case 4: return Accidental.DOUBLESHARP;
+    		case 5: return Accidental.NATURAL;
     		default: return Accidental.ABSENT;
     	}
     }
     
     private NoteType getNote(String noteToken) {
-    	String NOTE_REGEX = "[A-Ga-g]";
+    	String NOTE_REGEX = "(([Aa])|([Bb])|([Cc])|([Dd])|([Ee])|([Ff])|([Gg]))";
     	Pattern notePattern = Pattern.compile(NOTE_REGEX);
     	Matcher noteMatcher = notePattern.matcher(noteToken);
-    	String note = noteMatcher.find() ? noteMatcher.group(0) : "";
-    	switch (note) {
-    		case "A": 
-    		case "a":
+    	
+    	int groupMatch = 0;
+    	for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+    		if (noteMatcher.group(i) != null) {
+    			groupMatch = i;
+    			break;
+    		}
+    	}
+    	switch (groupMatch) {
+    		case 1:
     			return NoteType.A; 
-    		case "B": 
-    		case "b":
+    		case 2:
     			return NoteType.B;
-    		case "C":
-    		case "c":
+    		case 3:
     			return NoteType.C;
-    		case "D": 
-    		case "d":
+    		case 4:
     			return NoteType.D;
-    		case "E":
-    		case "e":
+    		case 5:
     			return NoteType.E;
-    		case "F":
-    		case "f":
+    		case 6:
     			return NoteType.F;
-    		case "G":
-    		case "g":
+    		case 7:
     			return NoteType.G;
     		default:
     			throw new IllegalArgumentException("Illegal Note");
