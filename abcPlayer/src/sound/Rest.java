@@ -2,7 +2,7 @@ package sound;
 
 public class Rest implements Playable
 {
-    private RatNum length; 
+    private final RatNum length; 
     
     public Rest(RatNum length)
     {

@@ -5,12 +5,13 @@ import java.util.List;
 
 public class Tuplet implements Playable 
 {
-    private TupletType type; 
-    private List<Note> notes; 
+    private final TupletType type; 
+    private final List<Note> notes; 
     
     public Tuplet(TupletType type, List<Note> notes)
     {
-        this.notes = new ArrayList<Note>(notes); 
+        this.type = type; 
+        this.notes = new ArrayList<Note>(notes);
     }
     
     public List<Note> getNotes()
