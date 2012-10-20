@@ -120,11 +120,17 @@ public class Parser {
     	throw new RuntimeException("Should not reach here.");
     }
     
-    public void ParseNote(String noteToken) {
+    private Note ParseNote(String noteToken) {
     	Accidental noteAccidental = getAccidental(noteToken);
     	NoteType noteName = getNote(noteToken);
     	int octave = getOctave(noteToken);
-    	RatNum length = getLength(noteToken);
+    	RatNum noteLength = getLength(noteToken);
+    	Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
+    						: new Note(noteName, octave, noteLength, noteAccidental);
+    	return parsedNote;
     }
     
+    private Chord ParseChord(String noteToken) {
+    	
+    }
 }

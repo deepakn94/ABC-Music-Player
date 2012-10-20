@@ -101,21 +101,21 @@ public class Lexer {
 		"|" +
 		"(K\\s*:\\s*[a-gA-G][#b]?m?\n)" + //Key
 		"|" +
-		"(?<Rest>z([0-9]+/[0-9]+|[0-9]+)?)" + //Rest
+		"(z([0-9]+/[0-9]+|[0-9]+)?)" + //Rest
 		"|" +
-		"(?<NoteExpression>(" + NOTE_EXPRESSION + ")\\s*)" +//Note
+		"((" + NOTE_EXPRESSION + ")\\s*)" +//Note
 		"|" +
-		"(?<Chord>\\[(" + NOTE_EXPRESSION + ")+\\]([0-9]+/[0-9]+)?\\s*)" + //Chord
+		"(\\[(" + NOTE_EXPRESSION + ")+\\]([0-9]+/[0-9]+)?\\s*)" + //Chord
 		"|" +
-		"(?<Doublet>\\(2(" + NOTE_EXPRESSION + "){2}\\s*)" + //Doublet
+		"(\\(2(" + NOTE_EXPRESSION + "){2}\\s*)" + //Doublet
 		"|" +
-		"(?<Triplet>\\(3(" + NOTE_EXPRESSION + "){3}\\s*)" + //Triplet
+		"(\\(3(" + NOTE_EXPRESSION + "){3}\\s*)" + //Triplet
 		"|" +
-		"(?<Quadruplet>\\(4(" + NOTE_EXPRESSION + "){4}\\s*)" + //Quadruplet
+		"(\\(4(" + NOTE_EXPRESSION + "){4}\\s*)" + //Quadruplet
 		"|" +
-		"(?<Barline>\\|:|:\\||\\|\\]|\\|\\|?|\\[\\|\\s*)" + //Barline
+		"(\\|:|:\\||\\|\\]|\\|\\|?|\\[\\|\\s*)" + //Barline
 		"|" +
-		"(?<Repeat>\\[[12]\\s*)" //n-th repeat
+		"(\\[[12]\\s*)" //n-th repeat
 		, Pattern.DOTALL
 	);
 	
