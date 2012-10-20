@@ -12,7 +12,7 @@ public class Repeat implements Playable
         this.toRepeat = new ArrayList<Playable>(toRepeat); 
     }
     
-    public final List<Playable> getItemsToRepeat()
+    public List<Playable> getItemsToRepeat()
     {
         return new ArrayList<Playable>(this.toRepeat);
     }
