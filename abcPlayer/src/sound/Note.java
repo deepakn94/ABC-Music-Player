@@ -1,21 +1,15 @@
 package sound;
 
-public class Note implements Playable
+public class Note extends SimpleNote implements Playable 
 {
-    private final NoteType noteBase; 
     private final int octavesAboveMiddleC; 
     private final RatNum noteLength; 
     
-    public Note(NoteType noteBase, int octaves, RatNum noteLength)
+    public Note(NoteType noteBase, int octaves, RatNum noteLength, Accidental accidental)
     {
-        this.noteBase = noteBase;
+        super(noteBase, accidental);
         this.octavesAboveMiddleC = octaves; 
         this.noteLength = noteLength; 
-    }
-    
-    public NoteType getBaseNoteType()
-    {
-        return noteBase; 
     }
     
     public int getOctavesAboveMiddleC()
