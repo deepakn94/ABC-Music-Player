@@ -7,10 +7,10 @@ import java.io.IOException;
 
 import sound.Token.TokenType;
 
-public class File_Reader {
+public class ABCFileReader {
 	private String filename;
 	
-	public File_Reader(String filename) {
+	public ABCFileReader(String filename) {
 		this.filename= filename;
 	}
 	
@@ -39,8 +39,8 @@ public class File_Reader {
 	}
 	
 	public static void main(String[] args) {
-		String file_name = "C:\\Users\\Deepak\\Documents\\git\\project1\\deepakn-yygu-arjunnar\\abcPlayer\\sample_abc\\invention.abc";
-		File_Reader file_reader = new File_Reader(file_name);
+		String file_name = "C:\\Users\\Deepak\\Documents\\git\\project1\\deepakn-yygu-arjunnar\\abcPlayer\\sample_abc\\fur_elise.abc";
+		ABCFileReader file_reader = new ABCFileReader(file_name);
 		try {
 			String content = file_reader.readContent();
 			//System.out.println(content);

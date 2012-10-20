@@ -1,5 +1,6 @@
 package sound;
 
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -81,6 +82,8 @@ public class Lexer {
     
     private static final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+|[0-9]+)?";
     
+    private static HashMap<Integer, TokenType> groupTypeMatching;
+    
 	private static final Pattern REGEX = Pattern.compile(
 		"^(X\\s*:\\s*[0-9]+\n)" + //Field number
 		"|" + 
@@ -128,6 +131,18 @@ public class Lexer {
 		TokenType.KEY
 	};
 	
+	public static void initializeMatching() {
+		groupTypeMatching = new HashMap<Integer,TokenType> ();
+		groupTypeMatching.put(9, TokenType.REST);
+		groupTypeMatching.put(11, TokenType.NOTE);
+		groupTypeMatching.put(15, TokenType.CHORD);
+		groupTypeMatching.put(20, TokenType.DOUBLET);
+		groupTypeMatching.put(24, TokenType.TRIPLET);
+		groupTypeMatching.put(28, TokenType.QUADRUPLET);
+		groupTypeMatching.put(32, TokenType.BARLINE);
+		groupTypeMatching.put(33, TokenType.REPEAT);
+	}
+	
 	/**
      * Creates the lexer over the passed string. Sets the string and string length variables.
      * @param string The string to tokenize. String represents a single line in the abc file.
@@ -135,6 +150,7 @@ public class Lexer {
     public Lexer(String string) { 
     	this.str = string;
         this.matcher = REGEX.matcher(str);
+        initializeMatching();
     }
     
     public Token next() throws IllegalArgumentException {
@@ -156,53 +172,12 @@ public class Lexer {
     		}
     	}
     	
-    	if (matcher.group("NoteExpression")!= null) {
-			//System.out.println(newToken);
-			newToken = newToken.trim();
-			return new Token(newToken, TokenType.NOTE);
-		} 
-    	
-    	else if (matcher.group("Rest")!=null) {
-			//System.out.println(newToken);
-			newToken = newToken.trim();
-			return new Token(newToken, TokenType.REST);
-		} 
-    	
-    	else if (matcher.group("Chord")!=null) {
-			//System.out.println(newToken);
-			newToken = newToken.trim();
-			return new Token(newToken, TokenType.CHORD);
-		} 
-    	
-    	else if (matcher.group("Doublet")!=null) {
-			//System.out.println(newToken);
-			newToken = newToken.trim();
-			return new Token(newToken, TokenType.DOUBLET);
-		} 
-    	
-    	else if (matcher.group("Triplet")!=null) {
-			//System.out.println(newToken);
-			newToken = newToken.trim();
-			return new Token(newToken, TokenType.TRIPLET);
-		} 
-    	
-    	else if (matcher.group("Quadruplet")!=null) {
-			//System.out.println(newToken);
-			newToken = newToken.trim();
-			return new Token(newToken, TokenType.QUADRUPLET);
-		} 
-    	
-    	else if (matcher.group("Barline")!=null) {
-			newToken = newToken.trim();
-			//System.out.println(newToken);
-			return new Token(newToken, TokenType.BARLINE);
-		}
-    	
-    	else if (matcher.group("Repeat")!=null) {
-			newToken = newToken.trim();
-			//System.out.println(newToken);
-			return new Token(newToken, TokenType.REPEAT);
-		}
+    	for (int i : groupTypeMatching.keySet()) {
+    		if (matcher.group(i) != null) {
+    			newToken = newToken.trim();
+    			return new Token(newToken, groupTypeMatching.get(i));
+    		}
+    	}
     	
     	//Should not reach here
     	throw new RuntimeException("Regex error - Should not reach here.");
