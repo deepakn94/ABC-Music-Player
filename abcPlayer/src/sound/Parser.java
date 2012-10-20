@@ -34,7 +34,7 @@ public class Parser {
     		case "^": return Accidental.SHARP;
     		case "^^": return Accidental.DOUBLESHARP;
     		case "=": return Accidental.NATURAL;
-    		default: return Accidental.NATURAL;
+    		default: return Accidental.ABSENT;
     	}
     }
     
@@ -78,6 +78,7 @@ public class Parser {
     	
     	Matcher higherOctaveMatcher = higherOctave.matcher(noteToken);
     	Matcher octaveMatcher = octavePattern.matcher(noteToken);
+    	
     	int octave = higherOctaveMatcher.find() ? 1 : 0;
     	String octaves = octaveMatcher.find() ? octaveMatcher.group(0) : "";
     	
@@ -87,10 +88,35 @@ public class Parser {
     	return octave;
     }
     
+    private RatNum getLength(String noteToken) {
+    	String LENGTH_REGEX = "([0-9]+/[0-9]+)|([0-9]+)";
+    	Pattern lengthPattern = Pattern.compile(LENGTH_REGEX);
+    	
+    	Matcher lengthMatcher = lengthPattern.matcher(noteToken);
+    	String length = lengthMatcher.find() ? lengthMatcher.group(0) : "";
+
+    	if (lengthMatcher.group(1) != null) {
+    		String[] rational = length.split("'");
+    		if (rational.length != 2) throw new RuntimeException("Should not occur");
+    		return new RatNum(Integer.parseInt(rational[0]), Integer.parseInt(rational[1]));
+    	}
+    	
+    	if (lengthMatcher.group(2) != null) {
+    		return new RatNum(Integer.parseInt(length));
+    	}
+    	
+    	if (length == "") {
+    		return new RatNum(1);
+    	}
+    	
+    	throw new RuntimeException("Should not reach here.");
+    }
+    
     public void ParseNote(String noteToken) {
     	Accidental noteAccidental = getAccidental(noteToken);
     	NoteType noteName = getNote(noteToken);
     	int octave = getOctave(noteToken);
+    	RatNum length = getLength(noteToken);
     }
     
 }
