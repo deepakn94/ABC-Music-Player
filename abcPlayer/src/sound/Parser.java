@@ -1,5 +1,7 @@
 package sound;
 
+
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,9 +19,49 @@ public class Parser {
         this.lex = lexer;     
     }
     
-    public void Parse()
+    public Piece Parse()
     {
+        ArrayList pieceSoFar = new ArrayList<Playable>();
+        for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
+            switch (tok.getTokenType()) {
+            case NOTE:
+                pieceSoFar.add(parseNote(tok));
+                break;
+            case REST:
+                pieceSoFar.add(parseRest(tok));
+                break;
+            case DOUBLET:
+                pieceSoFar.add(parseDoublet(tok));
+                break;
+            case TRIPLET:
+                pieceSoFar.add(parseTriplet(tok));
+                break;
+            case QUADRUPLET:
+                pieceSoFar.add(parseQuadruplet(tok));
+                break;
+            case BARLINE:
+                break;
+            case VOICE_CHANGE:
+                break;
+            case REPEAT:
+                break;
+                
+                
+             
+            }
+        }
         
+    }
+    
+    public Note parseNote(Token tok) {
+        
+    }
+  
+    public Rest parseRest(Token tok) {
+        
+    }
+    
+    public Tuplet parseDoublet(Token tok) {
         
     }
     
