@@ -100,9 +100,52 @@ public class Parser {
     
     public Piece Parse()
     {
+        final int DEFAULT_TEMPO = 100;
+        final RatNum DEFAULT_NOTE_LENGTH = new RatNum(1, 8);
+        final String DEFAULT_COMPOSER_VAL = "UNSPECIFIED";
+        
         List<Playable> pieceSoFar = new ArrayList<Playable>();
+        int startRepeatIndex = 0;
+        int endRepeatIndex = -1;
+        int firstRepeatIndex = -1;
+        int secondRepeatIndex = -1;
+        String title = null, meter = null;
+        List<Voice> voices = new ArrayList<Voice>();
+        int index = -1;
+        Key keySig = null;
+        
+        // Default values:
+        String composer = DEFAULT_COMPOSER_VAL;
+        int tempo = DEFAULT_TEMPO;
+        RatNum length = DEFAULT_NOTE_LENGTH;
+
+        
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
+            
+            //Header Tokens
+            case TITLE:
+                title = tok.getTokenName();
+            case COMPOSER_NAME:
+                composer = tok.getTokenName();
+            case METER:
+                meter = tok.getTokenName();
+            case TEMPO:
+                tempo = Integer.parseInt(tok.getTokenName());
+            case VOICE:
+                // Implement voice later
+                break;
+            case KEY:
+                keySig = parseKey(tok.getTokenName());
+                break;
+            case INDEX_NUMBER:
+                index = Integer.parseInt(tok.getTokenName());
+                break;
+            case LENGTH:
+                length = parseNoteLength(tok.getTokenName());
+                
+                
+            // Body Tokens
             case NOTE:
                 pieceSoFar.add(parseNote(tok.getTokenName()));
                 break;
@@ -112,8 +155,8 @@ public class Parser {
             case CHORD:
                 pieceSoFar.add(parseChord(tok.getTokenName()));
                 break;
-            case DOUBLET:
-                pieceSoFar.add(parseDoublet(tok.getTokenName()));
+            case DUPLET:
+                pieceSoFar.add(parseDuplet(tok.getTokenName()));
                 break;
             case TRIPLET:
                 pieceSoFar.add(parseTriplet(tok.getTokenName()));
@@ -125,21 +168,92 @@ public class Parser {
                 break;
             case VOICE_CHANGE:
                 break;
-            case REPEAT:
+            case START_REPEAT:
+                startRepeatIndex = pieceSoFar.size();
                 break; 
-                
-                          
+            case END_REPEAT:
+                endRepeatIndex = pieceSoFar.size();
+
+                if (firstRepeatIndex != -1) {
+                    for (int i = startRepeatIndex; i<firstRepeatIndex; i++) {
+                        pieceSoFar.add(pieceSoFar.get(i));
+                    }
+                    if (secondRepeatIndex != -1) {
+                        for (int i = secondRepeatIndex; i<endRepeatIndex; i++) {
+                            pieceSoFar.add(pieceSoFar.get(i));
+                        }
+                    }
+                    firstRepeatIndex = -1;
+                    secondRepeatIndex = -1;
+                }
+                else {
+                    for (int i = startRepeatIndex; i<endRepeatIndex; i++) {
+                        pieceSoFar.add(pieceSoFar.get(i));
+                    }
+                }                 
+                break; 
+            case REPEAT_FIRST_ENDING:
+                firstRepeatIndex = pieceSoFar.size();
+                secondRepeatIndex = -1;
+                break;
+            case REPEAT_SECOND_ENDING:
+                while (firstRepeatIndex != -1 && tok.getTokenType() != Token.TokenType.END_REPEAT) {
+                    tok = this.lex.next();
+                }
+                secondRepeatIndex = pieceSoFar.size();
+                break;
+            default:
+                break;
+            }
+            
+        }
+        if (index == -1 || keySig == null || title == null)
+            throw new IllegalArgumentException("These three options are required: X, T, K");
+        return new Piece(voices, index, title, keySig, composer, length, tempo);  
+        
+    }
+    
+    public Key parseKey(String noteToken) {
+        // Need to implement correct key regex, because I'm not very good with regexes lol.:
+        String KEY_REGEX = "(([ABDEFG][m]* | [C]))";
+        Pattern notePattern = Pattern.compile(KEY_REGEX);
+        Matcher noteMatcher = notePattern.matcher(noteToken);
+        
+        int groupMatch = 0;
+        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+            if (noteMatcher.group(i) != null) {
+                groupMatch = i;
+                break;
             }
         }
-        
+        switch (groupMatch) {
+            case 1:
+                return Key.A_MINOR; 
+            case 2:
+                return Key.B_MINOR;
+            // Finish this
+            default:
+                throw new IllegalArgumentException("Illegal Key");
+        }
     }
     
+    public RatNum parseNoteLength(String noteToken) {
+        
+        int i = 0;
+        while (noteToken.charAt(i) != '/') {
+            if (i++ > noteToken.length())
+                return new RatNum(Integer.parseInt(noteToken), 1);     
+        }
+        return new RatNum(Integer.parseInt(noteToken.substring(0, i)), Integer.parseInt(noteToken.substring(i)));
+    }
   
-    public Rest parseRest(String tok) {
-        
+    public Rest parseRest(String noteToken) {
+        RatNum restLength = getLength(noteToken);
+        Rest rest = new Rest(restLength);
+        return rest;
     }
     
-    private Note parseNote(String noteToken) {
+    public Note parseNote(String noteToken) {
         Accidental noteAccidental = getAccidental(noteToken);
         NoteType noteName = getNote(noteToken);
         int octave = getOctave(noteToken);
@@ -148,31 +262,84 @@ public class Parser {
                             : new Note(noteName, octave, noteLength, noteAccidental);
         return parsedNote;
     }
+    final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+|[0-9]+)?";
     
-    private Chord parseChord(String noteToken) {
-        final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+|[0-9]+)?";
-        Pattern accidentalPattern = Pattern.compile(NOTE_EXPRESSION);
-        Matcher accidentalMatcher = accidentalPattern.matcher(noteToken);
+    public Chord parseChord(String noteToken) {
+        List<Note> chords = new ArrayList<Note>();
         
+        Pattern chordPattern = Pattern.compile(NOTE_EXPRESSION);
+        Matcher chordMatcher = chordPattern.matcher(noteToken);
         int groupMatch = 0;
-        for (int i=1; i<=accidentalMatcher.groupCount(); ++i) {
-            if (accidentalMatcher.group(i) != null) {
-                groupMatch = i;
-                break;
+
+        for (int i=1; i<=chordMatcher.groupCount(); ++i) {
+            if (chordMatcher.group(i) != null) {
+                chords.add(parseNote(chordMatcher.group(i)));
             }
         }
+        return new Chord(chords);
     }
     
-    public Tuplet parseDoublet(String tok) {
+    public Tuplet parseDuplet(String noteToken) {
+        List<Note> duplet = new ArrayList<Note>();
+
+        Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
+        Matcher noteMatcher = notePattern.matcher(noteToken);
+        int groupMatch = 0;
         
+        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+            if (noteMatcher.group(i) != null) {
+                Note dupletNote = parseNote(noteMatcher.group(i));
+                RatNum newNoteLength = new RatNum(dupletNote.getNoteLength().getNumer()*3, dupletNote.getNoteLength().getDenom()*2);
+                dupletNote.setNoteLength(newNoteLength);
+                duplet.add(dupletNote);
+            }
+        }
+        if (duplet.size() > 2)
+            throw new RuntimeException("Duplet contains more than 2 notes");
+        
+        return new Tuplet(TupletType.DUPLET, duplet);
     }
 
-    public Tuplet parseTriplet(String tok) {
+    public Tuplet parseTriplet(String noteToken) {
+        List<Note> triplet = new ArrayList<Note>();
+
+        Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
+        Matcher noteMatcher = notePattern.matcher(noteToken);
+        int groupMatch = 0;
         
+        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+            if (noteMatcher.group(i) != null) {
+                Note tripletNote = parseNote(noteMatcher.group(i));
+                RatNum newNoteLength = new RatNum(tripletNote.getNoteLength().getNumer()*2, tripletNote.getNoteLength().getDenom()*3);
+                tripletNote.setNoteLength(newNoteLength);
+                triplet.add(tripletNote);
+            }
+        }
+        if (triplet.size() > 3)
+            throw new RuntimeException("Triplet contains more than 3 notes");
+        
+        return new Tuplet(TupletType.TRIPLET, triplet);
     }
     
-    public Tuplet parseQuadruplet(String tok) {
+    public Tuplet parseQuadruplet(String noteToken) {
+        List quadruplet = new ArrayList<Note>();
+
+        Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
+        Matcher noteMatcher = notePattern.matcher(noteToken);
+        int groupMatch = 0;
         
+        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+            if (noteMatcher.group(i) != null) {
+                Note quadrupletNote = parseNote(noteMatcher.group(i));
+                RatNum newNoteLength = new RatNum(quadrupletNote.getNoteLength().getNumer()*2, quadrupletNote.getNoteLength().getDenom()*3);
+                quadrupletNote.setNoteLength(newNoteLength);
+                quadruplet.add(quadrupletNote);
+            }
+        }
+        if (quadruplet.size() > 4)
+            throw new RuntimeException("Quadruplet contains more than 3 notes");
+        
+        return new Tuplet(TupletType.QUADRUPLET, quadruplet);
     }
     
     
@@ -188,7 +355,7 @@ public class Parser {
     			break;
     		}
     	}
-    	
+
     	switch (groupMatch) {
     		case 1: return Accidental.FLAT; 
     		case 2: return Accidental.DOUBLEFLAT;
