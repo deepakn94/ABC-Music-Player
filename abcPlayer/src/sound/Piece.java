@@ -19,23 +19,18 @@ public class Piece
     private RatNum noteLength; 
     private int tempo;  
     
-    //Default header field values 
-    private static final int DEFAULT_TEMPO = 100;
-    private static final RatNum DEFAULT_NOTE_LENGTH = new RatNum(1, 8);
-    private static final String DEFAULT_COMPOSER_VAL = "UNSPECIFIED";
     
-    public Piece(List<Voice> voices, int indexNumber, String title, Key key)
+    public Piece(List<Voice> voices, int indexNumber, String title, Key key, String composer, RatNum len, int tempo)
     {
         this.voices = new ArrayList<Voice>(voices); 
         
-        //Required fields
         this.title = title; 
         this.indexNumber = indexNumber; 
         this.keySignature = key; 
         
-        this.setTempo(DEFAULT_TEMPO); 
-        this.setDefaultNoteLength(DEFAULT_NOTE_LENGTH); 
-        this.setComposer(DEFAULT_COMPOSER_VAL);
+        this.tempo = tempo; 
+        this.noteLength = len; 
+        this.composer = composer;
     }
     
     public String getTitle()
