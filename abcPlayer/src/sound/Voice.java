@@ -8,10 +8,17 @@ public class Voice
     public static final String DEFAULT_VOICE_NAME = "DEFAULT_VOICE";
     
     private final List<Playable> elementsOfVoice; 
+    private final String name;
     
-    public Voice(List<Playable> elements)
+    public Voice(String name, List<Playable> elements)
     {
+        this.name = name;
         elementsOfVoice = new ArrayList<Playable>(elements); 
+    }
+    
+    public String getName()
+    {
+        return this.name;
     }
     
     public List<Playable> getElementsOfVoice()

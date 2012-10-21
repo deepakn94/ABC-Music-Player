@@ -4,6 +4,7 @@ package sound;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,17 +22,17 @@ public class Parser {
     public final static HashMap<Key, HashMap<NoteType, Accidental>> KEY_MAPPINGS = 
             new HashMap<Key, HashMap<NoteType, Accidental>>();
     
-    private final HashMap<String, ArrayList<Playable>> voiceMappings = 
-            new HashMap<String, ArrayList<Playable>>();
+    private final HashMap<String, List<Playable>> voiceMappings;
    
     private HashMap<NoteType, Accidental> currentKeyMappings;
     
     public Parser(Lexer lexer) {
         this.lex = lexer;  
-        Parser.initializeKeyMappings();
+        Parser.initializeKeyMappingsConstant();
+        voiceMappings = new HashMap<String, List<Playable>>();
     }
     
-    private static void initializeKeyMappings()
+    private static void initializeKeyMappingsConstant()
     {   
         //C major and A Minor 
         KEY_MAPPINGS.put(Key.C_MAJOR, new HashMap<NoteType, Accidental>());
@@ -114,14 +115,12 @@ public class Parser {
         }
         
         this.currentKeyMappings = new HashMap<NoteType, Accidental> (KEY_MAPPINGS.get(header.getKeySignature()));
-        
-        
 
         int startRepeatIndex = 0;
         int endRepeatIndex = -1;
         int firstRepeatIndex = -1;
         int secondRepeatIndex = -1;
-        List<Voice> voices = new ArrayList<Voice>();
+        
         int index = -1;
         
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
@@ -158,7 +157,7 @@ public class Parser {
                 startRepeatIndex = voiceMappings.get(currentVoiceName).size();
                 break; 
             case END_REPEAT:
-                endRepeatIndex =voiceMappings.get(currentVoiceName).size();
+                endRepeatIndex = voiceMappings.get(currentVoiceName).size();
 
                 if (firstRepeatIndex != -1) {
                     for (int i = startRepeatIndex; i<firstRepeatIndex; i++) {
@@ -169,11 +168,12 @@ public class Parser {
                             voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
                         }
                     }
+
                     firstRepeatIndex = -1;
                     secondRepeatIndex = -1;
                 }
                 else {
-                    for (int i = startRepeatIndex; i<endRepeatIndex; i++) {
+                    for (int i = startRepeatIndex; i < endRepeatIndex; i++) {
                         voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
                     }
                 }                 
@@ -194,10 +194,14 @@ public class Parser {
             
         }
         
-        //if (index == -1 || keySig == null || title == null)
-           //throw new IllegalArgumentException("These three options are required: X, T, K");
-       // return new Piece(voices, index, title, keySig, composer, length, tempo);  
+        List<Voice> voicesInPiece = new ArrayList<Voice>();
+        for(Map.Entry<String, List<Playable>> entry: voiceMappings.entrySet())
+        {
+            Voice toAdd = new Voice(entry.getKey(), entry.getValue());
+            voicesInPiece.add(toAdd);
+        }
         
+        return new Piece(voicesInPiece, header);
     }
     /*
     public Key parseKey(String noteToken) {
