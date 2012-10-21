@@ -27,8 +27,19 @@ public class Tuplet implements Playable
     public String toString() {
         String s = "Tuplet(" ;
         for (Note n : this.notes)
-            s = s + n.toString();
-        s = s + ")";
+            s = s + n.toString() + " ";
+        s = s.trim() + ")\n";
         return s;   
     }
+
+	@Override
+	public List<SequencePlayerNote> play(int startTicks, int numTicks) {
+		List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
+		int ticks = startTicks;
+		for (Note note:notes) {
+			sequencePlayerNotes.addAll(note.play(ticks, numTicks));
+			ticks += (numTicks * (note.getNoteLength().getNumer()/note.getNoteLength().getDenom()));
+		}
+		return sequencePlayerNotes;
+	}
 }

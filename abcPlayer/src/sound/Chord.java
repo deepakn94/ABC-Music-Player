@@ -20,9 +20,20 @@ public class Chord implements Playable
     public String toString() {
         String s = "Chord(";
         for (Note n : this.notes)
-            s = s + n.toString();
-        s= s + ")";
+            s = s + n.toString() + " ";
+        s= s.trim() + ")\n";
         return s;
         
     }
+
+    @Override
+	public List<SequencePlayerNote> play(int startTicks, int numTicks) {
+    	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
+		for (Note note:notes) {
+			sequencePlayerNotes.addAll(note.play(startTicks, numTicks));
+		}
+		return sequencePlayerNotes;
+	}
 }
+
+	

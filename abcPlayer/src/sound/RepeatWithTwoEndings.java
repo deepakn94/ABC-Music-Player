@@ -2,7 +2,7 @@ package sound;
 
 import java.util.ArrayList;
 import java.util.List;
-
+/*
 //Uses composition rather than inheritance. 
 public class RepeatWithTwoEndings implements Playable
 {
@@ -31,4 +31,4 @@ public class RepeatWithTwoEndings implements Playable
     {
         return ending2;
     }
-}
+}*/

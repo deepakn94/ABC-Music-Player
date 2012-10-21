@@ -52,7 +52,6 @@ public class Token {
 		START_REPEAT,
 		END_REPEAT,
 		BARLINE,
-		VOICE_CHANGE,
 		END_OF_PIECE
 	}
 	

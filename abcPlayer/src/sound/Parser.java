@@ -108,9 +108,9 @@ public class Parser {
     {
         Header header = this.parseHeader();
         String currentVoiceName = null;
-        if (currentKeyMappings.entrySet().isEmpty())
+        if (voiceMappings.size() == 1)
         {
-            currentVoiceName = Voice.DEFAULT_VOICE_NAME;
+            currentVoiceName = (String) voiceMappings.keySet().toArray()[0];
         }
         
         this.currentKeyMappings = new HashMap<NoteType, Accidental> (KEY_MAPPINGS.get(header.getKeySignature()));
@@ -119,8 +119,6 @@ public class Parser {
         int endRepeatIndex = -1;
         int firstRepeatIndex = -1;
         int secondRepeatIndex = -1;
-        
-        int index = -1;
         
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
@@ -148,7 +146,8 @@ public class Parser {
                 this.currentKeyMappings = new HashMap<NoteType, Accidental>(KEY_MAPPINGS.get(header.getKeySignature())); 
                 break;
 
-            case VOICE_CHANGE:
+            case VOICE:
+            	System.out.println("Reached voice change");
                 currentVoiceName = tok.getTokenName();
                 break;
                 
@@ -309,15 +308,17 @@ public class Parser {
     
     
     private Accidental getAccidental(String noteToken) {
-    	String ACCIDENTAL_REGEX = "((__)|(_)|(\\^\\^)|(\\^)|(=))";
+    	String ACCIDENTAL_REGEX = "(__)|(_)|(\\^\\^)|(\\^)|(=)";
     	Pattern accidentalPattern = Pattern.compile(ACCIDENTAL_REGEX);
     	Matcher accidentalMatcher = accidentalPattern.matcher(noteToken);
     	
     	int groupMatch = 0;
     	for (int i=1; i<=accidentalMatcher.groupCount(); ++i) {
-    		if (accidentalMatcher.group(i) != null) {
-    			groupMatch = i;
-    			break;
+    		if (accidentalMatcher.find(0)) {
+	    		if (accidentalMatcher.group(i) != null) {
+	    			groupMatch = i;
+	    			break;
+	    		}
     		}
     	}
 
@@ -332,15 +333,17 @@ public class Parser {
     }
     
     private NoteType getNote(String noteToken) {
-    	String NOTE_REGEX = "(([Aa])|([Bb])|([Cc])|([Dd])|([Ee])|([Ff])|([Gg]))";
+    	String NOTE_REGEX = "([Aa])|([Bb])|([Cc])|([Dd])|([Ee])|([Ff])|([Gg])";
     	Pattern notePattern = Pattern.compile(NOTE_REGEX);
     	Matcher noteMatcher = notePattern.matcher(noteToken);
-    	
+
     	int groupMatch = 0;
     	for (int i=1; i<=noteMatcher.groupCount(); ++i) {
-    		if (noteMatcher.group(i) != null) {
-    			groupMatch = i;
-    			break;
+    		if (noteMatcher.find(0)) {
+	    		if (noteMatcher.group(i) != null) {
+	    			groupMatch = i;
+	    			break;
+	    		}
     		}
     	}
     	switch (groupMatch) {
@@ -375,8 +378,10 @@ public class Parser {
     	int octave = higherOctaveMatcher.find() ? 1 : 0;
     	String octaves = octaveMatcher.find() ? octaveMatcher.group(0) : "";
     	
-    	if (octaveMatcher.group(1) != null) octave += octaves.length();
-    	if (octaveMatcher.group(2) != null) octave -= octaves.length();
+    	if (octaveMatcher.find(0)) {
+	    	if (octaveMatcher.group(1) != null) octave += octaves.length();
+	    	if (octaveMatcher.group(2) != null) octave -= octaves.length();
+    	}
     	
     	return octave;
     }
@@ -388,14 +393,16 @@ public class Parser {
     	Matcher lengthMatcher = lengthPattern.matcher(noteToken);
     	String length = lengthMatcher.find() ? lengthMatcher.group(0) : "";
 
-    	if (lengthMatcher.group(1) != null) {
-    		String[] rational = length.split("/");
-    		if (rational.length != 2) throw new RuntimeException("Should not occur");
-    		return new RatNum(Integer.parseInt(rational[0]), Integer.parseInt(rational[1]));
-    	}
+    	if (lengthMatcher.find(0)) {
+	    	if (lengthMatcher.group(1) != null) {
+	    		String[] rational = length.split("/");
+	    		if (rational.length != 2) throw new RuntimeException("Should not occur");
+	    		return new RatNum(Integer.parseInt(rational[0]), Integer.parseInt(rational[1]));
+	    	}
     	
-    	if (lengthMatcher.group(2) != null) {
-    		return new RatNum(Integer.parseInt(length));
+	    	if (lengthMatcher.group(2) != null) {
+	    		return new RatNum(Integer.parseInt(length));
+	    	}
     	}
     	
     	if (length == "") {
@@ -420,7 +427,6 @@ public class Parser {
         Key keySignature = null;
       
         int iterationCount = 0; 
-        int keyIterationNum = -1; 
         
         Outer:
         while (true) {
@@ -461,7 +467,6 @@ public class Parser {
                     break;
                 
                 case KEY: 
-                    keyIterationNum = iterationCount;
                     HashMap<String, Key> helperMappings = new HashMap<String, Key>(); 
                     
                     //Standard major keys
@@ -508,24 +513,20 @@ public class Parser {
                         keySignature = helperMappings.get(keyText);
                     }
                     
-                    break;
+                    break Outer;
                 
                 case LENGTH: 
                     defaultNoteLength = this.getLength(tok.getTokenName());
-                    break; 
-                
+                    break;
+                    
                 default:
-                    break Outer;
+                	break;
+           
               
             }
-            
-            if (keyIterationNum != -1 && 
-                    (iterationCount > keyIterationNum)) {
-                throw new IllegalArgumentException("Key did not appear as the last element in the header"); 
-            }
+   
             iterationCount++;
         }
-        
         if (indexNumber == null || title == null || keySignature == null) {
             throw new IllegalArgumentException("Required fields were not present in the header");
         }

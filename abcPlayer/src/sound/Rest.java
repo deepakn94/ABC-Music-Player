@@ -1,5 +1,8 @@
 package sound;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Rest implements Playable
 {
     private final RatNum length; 
@@ -19,4 +22,9 @@ public class Rest implements Playable
     	String rest = "Rest(" + (length.toString()) + ")";
     	return rest;
     }
+
+	@Override
+	public List<SequencePlayerNote> play(int startTicks, int numTicks) {
+		return new ArrayList<SequencePlayerNote> ();
+	}
 }

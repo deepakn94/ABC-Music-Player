@@ -13,7 +13,7 @@ public class Voice
     public Voice(String name, List<Playable> elements)
     {
         this.name = name;
-        elementsOfVoice = new ArrayList<Playable>(elements); 
+        elementsOfVoice = new ArrayList<Playable>(elements);
     }
     
     public String getName()
