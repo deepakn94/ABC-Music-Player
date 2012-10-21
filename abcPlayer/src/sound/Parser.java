@@ -23,8 +23,8 @@ public class Parser {
     
     private final HashMap<String, ArrayList<Playable>> voiceMappings = 
             new HashMap<String, ArrayList<Playable>>();
-    
-    private HashMap<NoteType, Accidental > currentKeyMappings; 
+   
+    private HashMap<NoteType, Accidental> currentKeyMappings;
     
     public Parser(Lexer lexer) {
         this.lex = lexer;  
@@ -268,6 +268,9 @@ public class Parser {
         NoteType noteName = getNote(noteToken);
         int octave = getOctave(noteToken);
         RatNum noteLength = getLength(noteToken);
+        if (currentKeyMappings.containsKey(noteName)) {
+        	noteAccidental = currentKeyMappings.get(noteName);
+        }
         Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
                             : new Note(noteName, octave, noteLength, noteAccidental);
         return parsedNote;
@@ -446,8 +449,7 @@ public class Parser {
     	throw new RuntimeException("Should not reach here.");
     }
     
-    private Header parseHeader()
-    {
+    private Header parseHeader() {
         //First two fields must be index number and title 
         Integer indexNumber = null;
         String title = null; 
@@ -465,58 +467,42 @@ public class Parser {
         int keyIterationNum = -1; 
         
         Outer:
-        while (true)
-        {
+        while (true) {
             Token tok = lex.next(); 
-            switch(tok.getTokenType())
-            {
+            switch(tok.getTokenType()) {
                 case INDEX_NUMBER: 
-                {
-                    if (iterationCount != 0)
-                    {
+                    if (iterationCount != 0) {
                         throw new IllegalArgumentException("Index number did not appear as the first element in the header");
                     }
                     
                     indexNumber = Integer.valueOf(tok.getTokenName());
-                }
                 
                 case TITLE: 
-                {
-                    if (iterationCount != 1)
-                    {
+                    if (iterationCount != 1)  {
                         throw new IllegalArgumentException("Title did not appear as the second element in the header");
                     }
                     
                     title = tok.getTokenName(); 
                     break;
-                }
                 
                 case COMPOSER_NAME: 
-                {
                     composerName = tok.getTokenName(); 
                     break;
-                }
                 
                 case METER: 
-                {
                     //Need to handle this
                     break;
-                }
                 
                 case TEMPO: 
-                {
                     tempo = Integer.valueOf(tok.getTokenName());
                     break;
-                }
                 
                 case VOICE: 
-                {
                     String voiceName = tok.getTokenName(); 
                     voiceMappings.put(voiceName, new ArrayList<Playable>());
-                }
+                    break;
                 
                 case KEY: 
-                {
                     keyIterationNum = iterationCount;
                     HashMap<String, Key> helperMappings = new HashMap<String, Key>(); 
                     
@@ -556,77 +542,57 @@ public class Parser {
                     helperMappings.put("A_m", Key.A_FLAT_MINOR);
                    
                     String keyText = tok.getTokenName().trim(); 
-                    if (!helperMappings.containsKey(keyText))
-                    {
+                    if (!helperMappings.containsKey(keyText)) {
                         keySignature = null;
                     }
                     
-                    else 
-                    {
+                    else {
                         keySignature = helperMappings.get(keyText);
                     }
                     
                     break;
-                }
                 
                 case LENGTH: 
-                {
                     defaultNoteLength = this.getLength(tok.getTokenName());
                     break; 
-                }
                 
                 default:
-                {
                     break Outer;
-                }               
+              
             }
             
             if (keyIterationNum != -1 && 
-                    (iterationCount > keyIterationNum))
-            {
+                    (iterationCount > keyIterationNum)) {
                 throw new IllegalArgumentException("Key did not appear as the last element in the header"); 
             }
             iterationCount++;
         }
         
-        if (indexNumber == null || title == null || keySignature == null)
-        {
+        if (indexNumber == null || title == null || keySignature == null) {
             throw new IllegalArgumentException("Required fields were not present in the header");
         }
         
         Header headerToReturn = new Header(title, keySignature, indexNumber);
-        if (composerName != null)
-        {
-            headerToReturn.setComposer(composerName); 
-        }
         
-        else 
-        {
+        if (composerName != null) {
+            headerToReturn.setComposer(composerName); 
+        } else {
             headerToReturn.setComposer("Unspecified");
         }
         
-        if (tempo != null)
-        {
+        if (tempo != null) {
             headerToReturn.setTempo(tempo.intValue()); 
-        }
-        
-        else 
-        {
+        } else {
             headerToReturn.setTempo(Header.DEFAULT_TEMPO);
         }
         
-        if (defaultNoteLength != null)
-        {
+        if (defaultNoteLength != null) {
             headerToReturn.setNoteLength(defaultNoteLength);
-        }
-        
-        else 
-        {
+        } else {
             headerToReturn.setNoteLength(Header.DEFAULT_NOTE_LENGTH);
         }
         
-        if (voiceMappings.entrySet().isEmpty())
-        {
+        if (voiceMappings.entrySet().isEmpty()) {
             voiceMappings.put(Voice.DEFAULT_VOICE_NAME, new ArrayList<Playable>());
         }
         
