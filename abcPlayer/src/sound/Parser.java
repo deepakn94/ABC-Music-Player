@@ -3,6 +3,7 @@ package sound;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,13 +19,8 @@ public class Parser {
      * @return none
      */
     
-    public final static HashMap<Key, HashMap<NoteType, Accidental>> KEY_MAPPINGS = 
+    public static HashMap<Key, HashMap<NoteType, Accidental>> keyMappings = 
             new HashMap<Key, HashMap<NoteType, Accidental>>();
-    
-    private final HashMap<String, ArrayList<Playable>> voiceMappings = 
-            new HashMap<String, ArrayList<Playable>>();
-   
-    private HashMap<NoteType, Accidental> currentKeyMappings;
     
     public Parser(Lexer lexer) {
         this.lex = lexer;  
@@ -34,47 +30,47 @@ public class Parser {
     private static void initializeKeyMappings()
     {   
         //C major and A Minor 
-        KEY_MAPPINGS.put(Key.C_MAJOR, new HashMap<NoteType, Accidental>());
-        KEY_MAPPINGS.put(Key.A_MINOR, new HashMap<NoteType, Accidental>());
+        keyMappings.put(Key.C_MAJOR, new HashMap<NoteType, Accidental>());
+        keyMappings.put(Key.A_MINOR, new HashMap<NoteType, Accidental>());
         
         //G major and E minor
         HashMap<NoteType, Accidental> map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.F,  Accidental.SHARP);
-        KEY_MAPPINGS.put(Key.G_MAJOR, map);
-        KEY_MAPPINGS.put(Key.E_MINOR, new HashMap<NoteType, Accidental>(map));
+        keyMappings.put(Key.G_MAJOR, map);
+        keyMappings.put(Key.E_MINOR, new HashMap<NoteType, Accidental>(map));
         
         //F major and D minor
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.B, Accidental.FLAT);
-        KEY_MAPPINGS.put(Key.F_MAJOR, map);
-        KEY_MAPPINGS.put(Key.D_MINOR, new HashMap<NoteType, Accidental>(map));
+        keyMappings.put(Key.F_MAJOR, map);
+        keyMappings.put(Key.D_MINOR, new HashMap<NoteType, Accidental>(map));
         
         //D major and B minor
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.C, Accidental.SHARP);
         map.put(NoteType.F, Accidental.SHARP);
-        KEY_MAPPINGS.put(Key.D_MAJOR, map); 
-        KEY_MAPPINGS.put(Key.B_MINOR, new HashMap<NoteType, Accidental>(map));
+        keyMappings.put(Key.D_MAJOR, map); 
+        keyMappings.put(Key.B_MINOR, new HashMap<NoteType, Accidental>(map));
         
         //G minor 
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.B, Accidental.FLAT);
         map.put(NoteType.E, Accidental.FLAT);
-        KEY_MAPPINGS.put(Key.G_MINOR, map); 
+        keyMappings.put(Key.G_MINOR, map); 
         
         //A major 
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.C, Accidental.SHARP);
         map.put(NoteType.F, Accidental.SHARP);
         map.put(NoteType.G,  Accidental.SHARP);
-        KEY_MAPPINGS.put(Key.A_MAJOR, map); 
+        keyMappings.put(Key.A_MAJOR, map); 
         
         //C minor
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.A, Accidental.FLAT);
         map.put(NoteType.B, Accidental.FLAT);
         map.put(NoteType.E, Accidental.FLAT);
-        KEY_MAPPINGS.put(Key.C_MINOR, map); 
+        keyMappings.put(Key.C_MINOR, map); 
         
         //E major
         map = new HashMap<NoteType, Accidental>(); 
@@ -82,7 +78,7 @@ public class Parser {
         map.put(NoteType.D, Accidental.SHARP);
         map.put(NoteType.F, Accidental.SHARP);
         map.put(NoteType.G, Accidental.SHARP);
-        KEY_MAPPINGS.put(Key.E_MAJOR, map);
+        keyMappings.put(Key.E_MAJOR, map);
         
         //F minor
         map = new HashMap<NoteType, Accidental>();
@@ -90,7 +86,7 @@ public class Parser {
         map.put(NoteType.B, Accidental.FLAT);
         map.put(NoteType.D, Accidental.FLAT);
         map.put(NoteType.E, Accidental.FLAT);
-        KEY_MAPPINGS.put(Key.F_MINOR, map); 
+        keyMappings.put(Key.F_MINOR, map); 
         
         //B major
         map = new HashMap<NoteType, Accidental>();
@@ -99,74 +95,92 @@ public class Parser {
         map.put(NoteType.D, Accidental.SHARP);
         map.put(NoteType.F, Accidental.SHARP);
         map.put(NoteType.G, Accidental.SHARP);
-        KEY_MAPPINGS.put(Key.B_MAJOR, map);  
-        
-        //NEED TO ADD MAPPINGS FOR OTHER UNUSUAL KEYS
+        keyMappings.put(Key.B_MAJOR, map);    
     }
     
     public Piece Parse()
     {
-        Header header = this.parseHeader();
-        String currentVoiceName = null;
-        if (currentKeyMappings.entrySet().isEmpty())
-        {
-            currentVoiceName = Voice.DEFAULT_VOICE_NAME;
-        }
+        final int DEFAULT_TEMPO = 100;
+        final RatNum DEFAULT_NOTE_LENGTH = new RatNum(1, 8);
+        final String DEFAULT_COMPOSER_VAL = "UNSPECIFIED";
         
-        this.currentKeyMappings = new HashMap<NoteType, Accidental> (KEY_MAPPINGS.get(header.getKeySignature()));
-        
-        
-
+        List<Playable> pieceSoFar = new ArrayList<Playable>();
         int startRepeatIndex = 0;
         int endRepeatIndex = -1;
         int firstRepeatIndex = -1;
         int secondRepeatIndex = -1;
+        String title = null, meter = null;
         List<Voice> voices = new ArrayList<Voice>();
         int index = -1;
+        Key keySig = null;
+        
+        // Default values:
+        String composer = DEFAULT_COMPOSER_VAL;
+        int tempo = DEFAULT_TEMPO;
+        RatNum length = DEFAULT_NOTE_LENGTH;
+
         
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
-  
+            
+            //Header Tokens
+            case TITLE:
+                title = tok.getTokenName();
+            case COMPOSER_NAME:
+                composer = tok.getTokenName();
+            case METER:
+                meter = tok.getTokenName();
+            case TEMPO:
+                tempo = Integer.parseInt(tok.getTokenName());
+            case VOICE:
+                // Implement voice later
+                break;
+            case KEY:
+                keySig = parseKey(tok.getTokenName());
+                break;
+            case INDEX_NUMBER:
+                index = Integer.parseInt(tok.getTokenName());
+                break;
+            case LENGTH:
+                length = parseNoteLength(tok.getTokenName());
+                
+                
             // Body Tokens
             case NOTE:
-                voiceMappings.get(currentVoiceName).add(parseNote(tok.getTokenName()));
+                pieceSoFar.add(parseNote(tok.getTokenName()));
                 break;
             case REST:
-                voiceMappings.get(currentVoiceName).add(parseRest(tok.getTokenName()));
+                pieceSoFar.add(parseRest(tok.getTokenName()));
                 break;
             case CHORD:
-                voiceMappings.get(currentVoiceName).add(parseChord(tok.getTokenName()));
+                pieceSoFar.add(parseChord(tok.getTokenName()));
                 break;
             case DUPLET:
-                voiceMappings.get(currentVoiceName).add(parseDuplet(tok.getTokenName()));
+                pieceSoFar.add(parseDuplet(tok.getTokenName()));
                 break;
             case TRIPLET:
-                voiceMappings.get(currentVoiceName).add(parseTriplet(tok.getTokenName()));
+                pieceSoFar.add(parseTriplet(tok.getTokenName()));
                 break;
             case QUADRUPLET:
-                voiceMappings.get(currentVoiceName).add(parseQuadruplet(tok.getTokenName()));
+                pieceSoFar.add(parseQuadruplet(tok.getTokenName()));
                 break;
             case BARLINE:
-                this.currentKeyMappings = new HashMap<NoteType, Accidental>(KEY_MAPPINGS.get(header.getKeySignature())); 
                 break;
-
             case VOICE_CHANGE:
-                currentVoiceName = tok.getTokenName();
                 break;
-                
             case START_REPEAT:
-                startRepeatIndex = voiceMappings.get(currentVoiceName).size();
+                startRepeatIndex = pieceSoFar.size();
                 break; 
             case END_REPEAT:
-                endRepeatIndex = voiceMappings.get(currentVoiceName).size() - 1;
+                endRepeatIndex = pieceSoFar.size();
 
                 if (firstRepeatIndex != -1) {
                     for (int i = startRepeatIndex; i<firstRepeatIndex; i++) {
-                        voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
+                        pieceSoFar.add(pieceSoFar.get(i));
                     }
                     if (secondRepeatIndex != -1) {
                         for (int i = secondRepeatIndex; i<endRepeatIndex; i++) {
-                            voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
+                            pieceSoFar.add(pieceSoFar.get(i));
                         }
                     }
                     firstRepeatIndex = -1;
@@ -174,40 +188,40 @@ public class Parser {
                 }
                 else {
                     for (int i = startRepeatIndex; i<endRepeatIndex; i++) {
-                        voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
+                        pieceSoFar.add(pieceSoFar.get(i));
                     }
                 }                 
                 break; 
             case REPEAT_FIRST_ENDING:
-                firstRepeatIndex = voiceMappings.get(currentVoiceName).size();
+                firstRepeatIndex = pieceSoFar.size();
                 secondRepeatIndex = -1;
                 break;
             case REPEAT_SECOND_ENDING:
                 while (firstRepeatIndex != -1 && tok.getTokenType() != Token.TokenType.END_REPEAT) {
                     tok = this.lex.next();
                 }
-                secondRepeatIndex = voiceMappings.get(currentVoiceName).size();
+                secondRepeatIndex = pieceSoFar.size();
                 break;
             default:
                 break;
             }
             
         }
-        
-        //if (index == -1 || keySig == null || title == null)
-           //throw new IllegalArgumentException("These three options are required: X, T, K");
-       // return new Piece(voices, index, title, keySig, composer, length, tempo);  
+        if (index == -1 || keySig == null || title == null)
+            throw new IllegalArgumentException("These three options are required: X, T, K");
+        return new Piece(voices, index, title, keySig, composer, length, tempo);  
         
     }
-    /*
+    
     public Key parseKey(String noteToken) {
-        String KEY_REGEX = "((Am)|(Bm)|(Cm)|(Dm)|(Em)|(Fm)|(Gm)|(A)|(B)|(C)|(D)|(E)|(F)|(G))";
-        Pattern keyPattern = Pattern.compile(KEY_REGEX);
-        Matcher keyMatcher = keyPattern.matcher(noteToken);
+        // Need to implement correct key regex, because I'm not very good with regexes lol.:
+        String KEY_REGEX = "(([ABDEFG][m]* | [C]))";
+        Pattern notePattern = Pattern.compile(KEY_REGEX);
+        Matcher noteMatcher = notePattern.matcher(noteToken);
         
         int groupMatch = 0;
-        for (int i=1; i<=keyMatcher.groupCount(); ++i) {
-            if (keyMatcher.group(i) != null) {
+        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+            if (noteMatcher.group(i) != null) {
                 groupMatch = i;
                 break;
             }
@@ -217,36 +231,12 @@ public class Parser {
                 return Key.A_MINOR; 
             case 2:
                 return Key.B_MINOR;
-            case 3:
-            	return Key.C_MINOR;
-            case 4:
-            	return Key.D_MINOR;
-            case 5:
-            	return Key.E_MINOR;
-            case 6:
-            	return Key.F_MINOR;
-            case 7:
-            	return Key.G_MINOR;
-            case 8:
-                return Key.A_MAJOR; 
-            case 9:
-                return Key.B_MAJOR;
-            case 10:
-            	return Key.C_MAJOR;
-            case 11:
-            	return Key.D_MAJOR;
-            case 12:
-            	return Key.E_MAJOR;
-            case 13:
-            	return Key.F_MAJOR;
-            case 14:
-            	return Key.G_MAJOR;	
-            
+            // Finish this
             default:
                 throw new IllegalArgumentException("Illegal Key");
         }
     }
-    */
+    
     public RatNum parseNoteLength(String noteToken) {
         
         int i = 0;
@@ -268,9 +258,6 @@ public class Parser {
         NoteType noteName = getNote(noteToken);
         int octave = getOctave(noteToken);
         RatNum noteLength = getLength(noteToken);
-        if (currentKeyMappings.containsKey(noteName)) {
-        	noteAccidental = currentKeyMappings.get(noteName);
-        }
         Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
                             : new Note(noteName, octave, noteLength, noteAccidental);
         return parsedNote;
@@ -282,12 +269,13 @@ public class Parser {
         
         Pattern chordPattern = Pattern.compile(NOTE_EXPRESSION);
         Matcher chordMatcher = chordPattern.matcher(noteToken);
-        int index = 0;
-        while (chordMatcher.find(index)) {
-            chords.add(parseNote(chordMatcher.group(0)));
-            index = chordMatcher.end();
-        } 
-        
+        int groupMatch = 0;
+
+        for (int i=1; i<=chordMatcher.groupCount(); ++i) {
+            if (chordMatcher.group(i) != null) {
+                chords.add(parseNote(chordMatcher.group(i)));
+            }
+        }
         return new Chord(chords);
     }
     
@@ -296,17 +284,18 @@ public class Parser {
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
         Matcher noteMatcher = notePattern.matcher(noteToken);
-        int index = 0;
+        int groupMatch = 0;
         
-        while (noteMatcher.find(index)) {
-            Note dupletNote = parseNote(noteMatcher.group(0));
-            RatNum newNoteLength = new RatNum(dupletNote.getNoteLength().getNumer()*3, dupletNote.getNoteLength().getDenom()*2);
-            dupletNote.setNoteLength(newNoteLength);
-            duplet.add(dupletNote);
-            index = noteMatcher.end();
+        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+            if (noteMatcher.group(i) != null) {
+                Note dupletNote = parseNote(noteMatcher.group(i));
+                RatNum newNoteLength = new RatNum(dupletNote.getNoteLength().getNumer()*3, dupletNote.getNoteLength().getDenom()*2);
+                dupletNote.setNoteLength(newNoteLength);
+                duplet.add(dupletNote);
+            }
         }
-        if (duplet.size() != 2)
-            throw new RuntimeException("Duplet does not contain 2 notes");
+        if (duplet.size() > 2)
+            throw new RuntimeException("Duplet contains more than 2 notes");
         
         return new Tuplet(TupletType.DUPLET, duplet);
     }
@@ -316,37 +305,39 @@ public class Parser {
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
         Matcher noteMatcher = notePattern.matcher(noteToken);
-        int index = 0;
+        int groupMatch = 0;
         
-        while (noteMatcher.find(index)) {
-            Note tripletNote = parseNote(noteMatcher.group(0));
-            RatNum newNoteLength = new RatNum(tripletNote.getNoteLength().getNumer()*2, tripletNote.getNoteLength().getDenom()*3);
-            tripletNote.setNoteLength(newNoteLength);
-            triplet.add(tripletNote);
-            index = noteMatcher.end();
+        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+            if (noteMatcher.group(i) != null) {
+                Note tripletNote = parseNote(noteMatcher.group(i));
+                RatNum newNoteLength = new RatNum(tripletNote.getNoteLength().getNumer()*2, tripletNote.getNoteLength().getDenom()*3);
+                tripletNote.setNoteLength(newNoteLength);
+                triplet.add(tripletNote);
+            }
         }
-        if (triplet.size() != 3)
-            throw new RuntimeException("Triplet does not contain 3 notes");
+        if (triplet.size() > 3)
+            throw new RuntimeException("Triplet contains more than 3 notes");
         
         return new Tuplet(TupletType.TRIPLET, triplet);
     }
     
     public Tuplet parseQuadruplet(String noteToken) {
-        List<Note> quadruplet = new ArrayList<Note>();
+        List quadruplet = new ArrayList<Note>();
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
         Matcher noteMatcher = notePattern.matcher(noteToken);
-        int index = 0;
+        int groupMatch = 0;
         
-        while (noteMatcher.find(index)) {
-            Note quadrupletNote = parseNote(noteMatcher.group(0));
-            RatNum newNoteLength = new RatNum(quadrupletNote.getNoteLength().getNumer()*2, quadrupletNote.getNoteLength().getDenom()*3);
-            quadrupletNote.setNoteLength(newNoteLength);
-            quadruplet.add(quadrupletNote);
-            index = noteMatcher.end();
+        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
+            if (noteMatcher.group(i) != null) {
+                Note quadrupletNote = parseNote(noteMatcher.group(i));
+                RatNum newNoteLength = new RatNum(quadrupletNote.getNoteLength().getNumer()*2, quadrupletNote.getNoteLength().getDenom()*3);
+                quadrupletNote.setNoteLength(newNoteLength);
+                quadruplet.add(quadrupletNote);
+            }
         }
-        if (quadruplet.size() != 4)
-            throw new RuntimeException("Quadruplet does not contain 4 notes");
+        if (quadruplet.size() > 4)
+            throw new RuntimeException("Quadruplet contains more than 3 notes");
         
         return new Tuplet(TupletType.QUADRUPLET, quadruplet);
     }
@@ -366,10 +357,10 @@ public class Parser {
     	}
 
     	switch (groupMatch) {
-    		case 1: return Accidental.DOUBLEFLAT; 
-    		case 2: return Accidental.FLAT;
-    		case 3: return Accidental.DOUBLESHARP;
-    		case 4: return Accidental.SHARP;
+    		case 1: return Accidental.FLAT; 
+    		case 2: return Accidental.DOUBLEFLAT;
+    		case 3: return Accidental.SHARP;
+    		case 4: return Accidental.DOUBLESHARP;
     		case 5: return Accidental.NATURAL;
     		default: return Accidental.ABSENT;
     	}
@@ -449,153 +440,5 @@ public class Parser {
     	throw new RuntimeException("Should not reach here.");
     }
     
-    private Header parseHeader() {
-        //First two fields must be index number and title 
-        Integer indexNumber = null;
-        String title = null; 
-       
-        //Optional fields
-        String composerName = null; 
-        Integer tempo = null; 
-        RatNum defaultNoteLength = null;
-        //NEED TO ADD ONE FOR METER
-        
-        //Last field must be the key 
-        Key keySignature = null;
-      
-        int iterationCount = 0; 
-        int keyIterationNum = -1; 
-        
-        Outer:
-        while (true) {
-            Token tok = lex.next(); 
-            switch(tok.getTokenType()) {
-                case INDEX_NUMBER: 
-                    if (iterationCount != 0) {
-                        throw new IllegalArgumentException("Index number did not appear as the first element in the header");
-                    }
-                    
-                    indexNumber = Integer.valueOf(tok.getTokenName());
-                
-                case TITLE: 
-                    if (iterationCount != 1)  {
-                        throw new IllegalArgumentException("Title did not appear as the second element in the header");
-                    }
-                    
-                    title = tok.getTokenName(); 
-                    break;
-                
-                case COMPOSER_NAME: 
-                    composerName = tok.getTokenName(); 
-                    break;
-                
-                case METER: 
-                    //Need to handle this
-                    break;
-                
-                case TEMPO: 
-                    tempo = Integer.valueOf(tok.getTokenName());
-                    break;
-                
-                case VOICE: 
-                    String voiceName = tok.getTokenName(); 
-                    voiceMappings.put(voiceName, new ArrayList<Playable>());
-                    break;
-                
-                case KEY: 
-                    keyIterationNum = iterationCount;
-                    HashMap<String, Key> helperMappings = new HashMap<String, Key>(); 
-                    
-                    //Standard major keys
-                    helperMappings.put("A", Key.A_MAJOR); 
-                    helperMappings.put("B", Key.B_MAJOR);
-                    helperMappings.put("C", Key.C_MAJOR);
-                    helperMappings.put("D", Key.D_MAJOR);
-                    helperMappings.put("E", Key.E_MAJOR);
-                    helperMappings.put("F", Key.F_MAJOR);
-                    helperMappings.put("G", Key.G_MAJOR);
-                    
-                    //Standard minor keys
-                    helperMappings.put("Am", Key.A_MINOR); 
-                    helperMappings.put("Bm", Key.B_MINOR);
-                    helperMappings.put("Cm", Key.C_MINOR);
-                    helperMappings.put("Dm", Key.D_MINOR);
-                    helperMappings.put("Em", Key.E_MINOR);
-                    helperMappings.put("Fm", Key.F_MINOR);
-                    helperMappings.put("Gm", Key.G_MINOR);
-                    
-                    //Other keys 
-                    helperMappings.put("B_", Key.B_FLAT_MAJOR); 
-                    helperMappings.put("F^m", Key.F_SHARP_MINOR);
-                    helperMappings.put("E_", Key.E_FLAT_MAJOR);
-                    helperMappings.put("C^m", Key.C_SHARP_MINOR);
-                    helperMappings.put("A_", Key.A_FLAT_MAJOR);
-                    helperMappings.put("G^m", Key.G_SHARP_MINOR);
-                    helperMappings.put("D_", Key.D_FLAT_MAJOR);
-                    
-                    helperMappings.put("B_m", Key.B_FLAT_MINOR); 
-                    helperMappings.put("F^", Key.F_SHARP_MAJOR);
-                    helperMappings.put("D^", Key.D_SHARP_MAJOR);
-                    helperMappings.put("G_", Key.G_FLAT_MAJOR);
-                    helperMappings.put("E_m", Key.E_FLAT_MINOR);
-                    helperMappings.put("C_", Key.C_FLAT_MAJOR);
-                    helperMappings.put("A_m", Key.A_FLAT_MINOR);
-                   
-                    String keyText = tok.getTokenName().trim(); 
-                    if (!helperMappings.containsKey(keyText)) {
-                        keySignature = null;
-                    }
-                    
-                    else {
-                        keySignature = helperMappings.get(keyText);
-                    }
-                    
-                    break;
-                
-                case LENGTH: 
-                    defaultNoteLength = this.getLength(tok.getTokenName());
-                    break; 
-                
-                default:
-                    break Outer;
-              
-            }
-            
-            if (keyIterationNum != -1 && 
-                    (iterationCount > keyIterationNum)) {
-                throw new IllegalArgumentException("Key did not appear as the last element in the header"); 
-            }
-            iterationCount++;
-        }
-        
-        if (indexNumber == null || title == null || keySignature == null) {
-            throw new IllegalArgumentException("Required fields were not present in the header");
-        }
-        
-        Header headerToReturn = new Header(title, keySignature, indexNumber);
-        
-        if (composerName != null) {
-            headerToReturn.setComposer(composerName); 
-        } else {
-            headerToReturn.setComposer("Unspecified");
-        }
-        
-        if (tempo != null) {
-            headerToReturn.setTempo(tempo.intValue()); 
-        } else {
-            headerToReturn.setTempo(Header.DEFAULT_TEMPO);
-        }
-        
-        if (defaultNoteLength != null) {
-            headerToReturn.setNoteLength(defaultNoteLength);
-        } else {
-            headerToReturn.setNoteLength(Header.DEFAULT_NOTE_LENGTH);
-        }
-        
-        if (voiceMappings.entrySet().isEmpty()) {
-            voiceMappings.put(Voice.DEFAULT_VOICE_NAME, new ArrayList<Playable>());
-        }
-        
-        return headerToReturn;
-    }
+
 }
