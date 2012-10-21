@@ -18,4 +18,13 @@ public class Voice
     {
         return new ArrayList<Playable>(elementsOfVoice); 
     }
+    
+    @Override
+    public String toString() {
+    	StringBuilder newStringBuilder = new StringBuilder();
+    	for (Playable elementOfVoice: elementsOfVoice) {
+    		newStringBuilder.append(elementOfVoice.toString());
+    	}
+    	return newStringBuilder.toString();
+    }
 }

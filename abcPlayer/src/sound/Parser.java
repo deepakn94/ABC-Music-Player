@@ -147,18 +147,18 @@ public class Parser {
                 voiceMappings.get(currentVoiceName).add(parseQuadruplet(tok.getTokenName()));
                 break;
             case BARLINE:
-            {
                 this.currentKeyMappings = new HashMap<NoteType, Accidental>(KEY_MAPPINGS.get(header.getKeySignature())); 
                 break;
-            }
+
             case VOICE_CHANGE:
                 currentVoiceName = tok.getTokenName();
                 break;
+                
             case START_REPEAT:
                 startRepeatIndex = voiceMappings.get(currentVoiceName).size();
                 break; 
             case END_REPEAT:
-                endRepeatIndex =voiceMappings.get(currentVoiceName).size();
+                endRepeatIndex = voiceMappings.get(currentVoiceName).size() - 1;
 
                 if (firstRepeatIndex != -1) {
                     for (int i = startRepeatIndex; i<firstRepeatIndex; i++) {
