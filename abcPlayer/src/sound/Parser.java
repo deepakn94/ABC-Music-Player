@@ -108,7 +108,7 @@ public class Parser {
     public Piece Parse()
     {
         Header header = this.parseHeader();
-        this.currentKeyMappings = keyMappings.get(header.getKeySignature());
+        this.currentKeyMappings = new HashMap<NoteType, Accidental> (keyMappings.get(header.getKeySignature()));
 
         //final int DEFAULT_TEMPO = 100;
         //final RatNum DEFAULT_NOTE_LENGTH = new RatNum(1, 8);
@@ -148,7 +148,8 @@ public class Parser {
                 break;
             case BARLINE:
             {
-                this.currentKeyMappings = keyMappings.get(header.getKeySignature()); 
+                this.currentKeyMappings = new HashMap<NoteType, Accidental>(keyMappings.get(header.getKeySignature())); 
+                break;
             }
             case VOICE_CHANGE:
                 break;
