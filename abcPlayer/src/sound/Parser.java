@@ -25,19 +25,22 @@ public class Parser {
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
             case NOTE:
-                pieceSoFar.add(parseNote(tok));
+                pieceSoFar.add(parseNote(tok.getTokenName()));
                 break;
             case REST:
-                pieceSoFar.add(parseRest(tok));
+                pieceSoFar.add(parseRest(tok.getTokenName()));
+                break;
+            case CHORD:
+                pieceSoFar.add(parseChord(tok.getTokenName()));
                 break;
             case DOUBLET:
-                pieceSoFar.add(parseDoublet(tok));
+                pieceSoFar.add(parseDoublet(tok.getTokenName()));
                 break;
             case TRIPLET:
-                pieceSoFar.add(parseTriplet(tok));
+                pieceSoFar.add(parseTriplet(tok.getTokenName()));
                 break;
             case QUADRUPLET:
-                pieceSoFar.add(parseQuadruplet(tok));
+                pieceSoFar.add(parseQuadruplet(tok.getTokenName()));
                 break;
             case BARLINE:
                 break;
@@ -46,24 +49,53 @@ public class Parser {
             case REPEAT:
                 break;
                 
-                
-             
+                          
             }
         }
         
     }
     
-    public Note parseNote(Token tok) {
-        
-    }
   
-    public Rest parseRest(Token tok) {
+    public Rest parseRest(String tok) {
         
     }
     
-    public Tuplet parseDoublet(Token tok) {
+    private Note parseNote(String noteToken) {
+        Accidental noteAccidental = getAccidental(noteToken);
+        NoteType noteName = getNote(noteToken);
+        int octave = getOctave(noteToken);
+        RatNum noteLength = getLength(noteToken);
+        Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
+                            : new Note(noteName, octave, noteLength, noteAccidental);
+        return parsedNote;
+    }
+    
+    private Chord parseChord(String noteToken) {
+        final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+|[0-9]+)?";
+        Pattern accidentalPattern = Pattern.compile(NOTE_EXPRESSION);
+        Matcher accidentalMatcher = accidentalPattern.matcher(noteToken);
+        
+        int groupMatch = 0;
+        for (int i=1; i<=accidentalMatcher.groupCount(); ++i) {
+            if (accidentalMatcher.group(i) != null) {
+                groupMatch = i;
+                break;
+            }
+        }
+    }
+    
+    public Tuplet parseDoublet(String tok) {
         
     }
+
+    public Tuplet parseTriplet(String tok) {
+        
+    }
+    
+    public Tuplet parseQuadruplet(String tok) {
+        
+    }
+    
     
     private Accidental getAccidental(String noteToken) {
     	String ACCIDENTAL_REGEX = "((__)|(_)|(\\^\\^)|(\\^)|(=))";
@@ -162,17 +194,5 @@ public class Parser {
     	throw new RuntimeException("Should not reach here.");
     }
     
-    private Note ParseNote(String noteToken) {
-    	Accidental noteAccidental = getAccidental(noteToken);
-    	NoteType noteName = getNote(noteToken);
-    	int octave = getOctave(noteToken);
-    	RatNum noteLength = getLength(noteToken);
-    	Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
-    						: new Note(noteName, octave, noteLength, noteAccidental);
-    	return parsedNote;
-    }
-    
-    private Chord ParseChord(String noteToken) {
-    	
-    }
+
 }
