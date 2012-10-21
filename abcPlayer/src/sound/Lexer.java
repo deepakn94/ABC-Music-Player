@@ -115,7 +115,9 @@ public class Lexer {
 		"|" +
 		"(\\|:|:\\||\\|\\]|\\|\\|?|\\[\\|\\s*)" + //Barline
 		"|" +
-		"(\\[[12]\\s*)" //n-th repeat
+		"(\\[1\\s*)" + //1st repeat
+		"|" +
+		"(\\[2\\s*)" //2nd repeat
 		, Pattern.DOTALL
 	);
 	
@@ -140,7 +142,8 @@ public class Lexer {
 		groupTypeMatching.put(24, TokenType.TRIPLET);
 		groupTypeMatching.put(28, TokenType.QUADRUPLET);
 		groupTypeMatching.put(32, TokenType.BARLINE);
-		groupTypeMatching.put(33, TokenType.REPEAT);
+		groupTypeMatching.put(33, TokenType.FIRST_REPEAT);
+		groupTypeMatching.put(34, TokenType.SECOND_REPEAT);
 	}
 	
 	/**
