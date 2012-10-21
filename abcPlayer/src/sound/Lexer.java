@@ -112,12 +112,17 @@ public class Lexer {
 		"(\\(3(" + NOTE_EXPRESSION + "){3}\\s*)" + //Triplet
 		"|" +
 		"(\\(4(" + NOTE_EXPRESSION + "){4}\\s*)" + //Quadruplet
+		"|" + 
+		"(\\|:\\s*)" + //Start repeat
+		"|" + 
+		"(:\\|\\s*)" + //End repeat
 		"|" +
-		"(\\|:|:\\||\\|\\]|\\|\\|?|\\[\\|\\s*)" + //Barline
+		"(\\|\\]|\\|\\|?|\\[\\|\\s*)" + //Barline
 		"|" +
-		"(\\[1\\s*)" + //1st repeat
+		"(\\[1\\s*)" + //Repeat first ending
 		"|" +
-		"(\\[2\\s*)" //2nd repeat
+		"(\\[2\\s*)"//Repeat second ending
+		
 		, Pattern.DOTALL
 	);
 	
@@ -141,9 +146,11 @@ public class Lexer {
 		groupTypeMatching.put(20, TokenType.DOUBLET);
 		groupTypeMatching.put(24, TokenType.TRIPLET);
 		groupTypeMatching.put(28, TokenType.QUADRUPLET);
-		groupTypeMatching.put(32, TokenType.BARLINE);
-		groupTypeMatching.put(33, TokenType.FIRST_REPEAT);
-		groupTypeMatching.put(34, TokenType.SECOND_REPEAT);
+		groupTypeMatching.put(32, TokenType.START_REPEAT);
+		groupTypeMatching.put(33, TokenType.END_REPEAT);
+		groupTypeMatching.put(34, TokenType.BARLINE);
+		groupTypeMatching.put(35, TokenType.REPEAT_FIRST_ENDING);
+		groupTypeMatching.put(36, TokenType.REPEAT_SECOND_ENDING);
 	}
 	
 	/**
