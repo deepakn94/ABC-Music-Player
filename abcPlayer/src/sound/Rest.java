@@ -13,4 +13,10 @@ public class Rest implements Playable
     {
         return length; 
     }
+    
+    @Override
+    public String toString() {
+    	String rest = "z" + (length.toString());
+    	return rest;
+    }
 }
