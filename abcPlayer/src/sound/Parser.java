@@ -2,11 +2,13 @@ package sound;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Parser {
-    Lexer lex;
+    private final Lexer lex;
     
     /**
      * Creates a new parser over the lexer.  This parser will use the passed
@@ -15,8 +17,84 @@ public class Parser {
      * @param lexer The lexer.
      * @return none
      */
+    
+    public static HashMap<Key, HashMap<NoteType, Accidental>> keyMappings = 
+            new HashMap<Key, HashMap<NoteType, Accidental>>();
+    
     public Parser(Lexer lexer) {
-        this.lex = lexer;     
+        this.lex = lexer;  
+        Parser.initializeKeyMappings();
+    }
+    
+    private static void initializeKeyMappings()
+    {   
+        //C major and A Minor 
+        keyMappings.put(Key.C_MAJOR, new HashMap<NoteType, Accidental>());
+        keyMappings.put(Key.A_MINOR, new HashMap<NoteType, Accidental>());
+        
+        //G major and E minor
+        HashMap<NoteType, Accidental> map = new HashMap<NoteType, Accidental>(); 
+        map.put(NoteType.F,  Accidental.SHARP);
+        keyMappings.put(Key.G_MAJOR, map);
+        keyMappings.put(Key.E_MINOR, new HashMap<NoteType, Accidental>(map));
+        
+        //F major and D minor
+        map = new HashMap<NoteType, Accidental>(); 
+        map.put(NoteType.B, Accidental.FLAT);
+        keyMappings.put(Key.F_MAJOR, map);
+        keyMappings.put(Key.D_MINOR, new HashMap<NoteType, Accidental>(map));
+        
+        //D major and B minor
+        map = new HashMap<NoteType, Accidental>(); 
+        map.put(NoteType.C, Accidental.SHARP);
+        map.put(NoteType.F, Accidental.SHARP);
+        keyMappings.put(Key.D_MAJOR, map); 
+        keyMappings.put(Key.B_MINOR, new HashMap<NoteType, Accidental>(map));
+        
+        //G minor 
+        map = new HashMap<NoteType, Accidental>(); 
+        map.put(NoteType.B, Accidental.FLAT);
+        map.put(NoteType.E, Accidental.FLAT);
+        keyMappings.put(Key.G_MINOR, map); 
+        
+        //A major 
+        map = new HashMap<NoteType, Accidental>(); 
+        map.put(NoteType.C, Accidental.SHARP);
+        map.put(NoteType.F, Accidental.SHARP);
+        map.put(NoteType.G,  Accidental.SHARP);
+        keyMappings.put(Key.A_MAJOR, map); 
+        
+        //C minor
+        map = new HashMap<NoteType, Accidental>(); 
+        map.put(NoteType.A, Accidental.FLAT);
+        map.put(NoteType.B, Accidental.FLAT);
+        map.put(NoteType.E, Accidental.FLAT);
+        keyMappings.put(Key.C_MINOR, map); 
+        
+        //E major
+        map = new HashMap<NoteType, Accidental>(); 
+        map.put(NoteType.C, Accidental.SHARP);
+        map.put(NoteType.D, Accidental.SHARP);
+        map.put(NoteType.F, Accidental.SHARP);
+        map.put(NoteType.G, Accidental.SHARP);
+        keyMappings.put(Key.E_MAJOR, map);
+        
+        //F minor
+        map = new HashMap<NoteType, Accidental>();
+        map.put(NoteType.A, Accidental.FLAT);
+        map.put(NoteType.B, Accidental.FLAT);
+        map.put(NoteType.D, Accidental.FLAT);
+        map.put(NoteType.E, Accidental.FLAT);
+        keyMappings.put(Key.F_MINOR, map); 
+        
+        //B major
+        map = new HashMap<NoteType, Accidental>();
+        map.put(NoteType.A, Accidental.SHARP);
+        map.put(NoteType.C, Accidental.SHARP);
+        map.put(NoteType.D, Accidental.SHARP);
+        map.put(NoteType.F, Accidental.SHARP);
+        map.put(NoteType.G, Accidental.SHARP);
+        keyMappings.put(Key.B_MAJOR, map);    
     }
     
     public Piece Parse()
@@ -47,7 +125,7 @@ public class Parser {
             case VOICE_CHANGE:
                 break;
             case REPEAT:
-                break;
+                break; 
                 
                           
             }
