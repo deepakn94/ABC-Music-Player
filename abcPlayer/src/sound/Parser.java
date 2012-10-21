@@ -4,6 +4,7 @@ package sound;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -99,7 +100,7 @@ public class Parser {
     
     public Piece Parse()
     {
-        ArrayList pieceSoFar = new ArrayList<Playable>();
+        List<Playable> pieceSoFar = new ArrayList<Playable>();
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
             case NOTE:
