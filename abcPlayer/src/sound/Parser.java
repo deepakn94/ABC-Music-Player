@@ -269,13 +269,12 @@ public class Parser {
         
         Pattern chordPattern = Pattern.compile(NOTE_EXPRESSION);
         Matcher chordMatcher = chordPattern.matcher(noteToken);
-        int groupMatch = 0;
-
-        for (int i=1; i<=chordMatcher.groupCount(); ++i) {
-            if (chordMatcher.group(i) != null) {
-                chords.add(parseNote(chordMatcher.group(i)));
-            }
-        }
+        int index = 0;
+        while (chordMatcher.find(index)) {
+            chords.add(parseNote(chordMatcher.group(0)));
+            index = chordMatcher.end();
+        } 
+        
         return new Chord(chords);
     }
     
@@ -284,18 +283,17 @@ public class Parser {
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
         Matcher noteMatcher = notePattern.matcher(noteToken);
-        int groupMatch = 0;
+        int index = 0;
         
-        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
-            if (noteMatcher.group(i) != null) {
-                Note dupletNote = parseNote(noteMatcher.group(i));
-                RatNum newNoteLength = new RatNum(dupletNote.getNoteLength().getNumer()*3, dupletNote.getNoteLength().getDenom()*2);
-                dupletNote.setNoteLength(newNoteLength);
-                duplet.add(dupletNote);
-            }
+        while (noteMatcher.find(index)) {
+            Note dupletNote = parseNote(noteMatcher.group(0));
+            RatNum newNoteLength = new RatNum(dupletNote.getNoteLength().getNumer()*3, dupletNote.getNoteLength().getDenom()*2);
+            dupletNote.setNoteLength(newNoteLength);
+            duplet.add(dupletNote);
+            index = noteMatcher.end();
         }
-        if (duplet.size() > 2)
-            throw new RuntimeException("Duplet contains more than 2 notes");
+        if (duplet.size() != 2)
+            throw new RuntimeException("Duplet does not contain 2 notes");
         
         return new Tuplet(TupletType.DUPLET, duplet);
     }
@@ -305,39 +303,37 @@ public class Parser {
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
         Matcher noteMatcher = notePattern.matcher(noteToken);
-        int groupMatch = 0;
+        int index = 0;
         
-        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
-            if (noteMatcher.group(i) != null) {
-                Note tripletNote = parseNote(noteMatcher.group(i));
-                RatNum newNoteLength = new RatNum(tripletNote.getNoteLength().getNumer()*2, tripletNote.getNoteLength().getDenom()*3);
-                tripletNote.setNoteLength(newNoteLength);
-                triplet.add(tripletNote);
-            }
+        while (noteMatcher.find(index)) {
+            Note tripletNote = parseNote(noteMatcher.group(0));
+            RatNum newNoteLength = new RatNum(tripletNote.getNoteLength().getNumer()*2, tripletNote.getNoteLength().getDenom()*3);
+            tripletNote.setNoteLength(newNoteLength);
+            triplet.add(tripletNote);
+            index = noteMatcher.end();
         }
-        if (triplet.size() > 3)
-            throw new RuntimeException("Triplet contains more than 3 notes");
+        if (triplet.size() != 3)
+            throw new RuntimeException("Triplet does not contain 3 notes");
         
         return new Tuplet(TupletType.TRIPLET, triplet);
     }
     
     public Tuplet parseQuadruplet(String noteToken) {
-        List quadruplet = new ArrayList<Note>();
+        List<Note> quadruplet = new ArrayList<Note>();
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
         Matcher noteMatcher = notePattern.matcher(noteToken);
-        int groupMatch = 0;
+        int index = 0;
         
-        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
-            if (noteMatcher.group(i) != null) {
-                Note quadrupletNote = parseNote(noteMatcher.group(i));
-                RatNum newNoteLength = new RatNum(quadrupletNote.getNoteLength().getNumer()*2, quadrupletNote.getNoteLength().getDenom()*3);
-                quadrupletNote.setNoteLength(newNoteLength);
-                quadruplet.add(quadrupletNote);
-            }
+        while (noteMatcher.find(index)) {
+            Note quadrupletNote = parseNote(noteMatcher.group(0));
+            RatNum newNoteLength = new RatNum(quadrupletNote.getNoteLength().getNumer()*2, quadrupletNote.getNoteLength().getDenom()*3);
+            quadrupletNote.setNoteLength(newNoteLength);
+            quadruplet.add(quadrupletNote);
+            index = noteMatcher.end();
         }
-        if (quadruplet.size() > 4)
-            throw new RuntimeException("Quadruplet contains more than 3 notes");
+        if (quadruplet.size() != 4)
+            throw new RuntimeException("Quadruplet does not contain 4 notes");
         
         return new Tuplet(TupletType.QUADRUPLET, quadruplet);
     }
@@ -357,10 +353,10 @@ public class Parser {
     	}
 
     	switch (groupMatch) {
-    		case 1: return Accidental.FLAT; 
-    		case 2: return Accidental.DOUBLEFLAT;
-    		case 3: return Accidental.SHARP;
-    		case 4: return Accidental.DOUBLESHARP;
+    		case 1: return Accidental.DOUBLEFLAT; 
+    		case 2: return Accidental.FLAT;
+    		case 3: return Accidental.DOUBLESHARP;
+    		case 4: return Accidental.SHARP;
     		case 5: return Accidental.NATURAL;
     		default: return Accidental.ABSENT;
     	}
