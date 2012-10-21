@@ -25,7 +25,7 @@ public class Parser {
     private final HashMap<String, ArrayList<Playable>> voiceMappings = 
             new HashMap<String, ArrayList<Playable>>();
     
-    private Key currentKey; 
+    private HashMap<NoteType, Accidental >currentKeyMappings; 
     
     public Parser(Lexer lexer) {
         this.lex = lexer;  
@@ -108,7 +108,7 @@ public class Parser {
     public Piece Parse()
     {
         Header header = this.parseHeader();
-        this.currentKey = header.getKeySignature();
+        this.currentKeyMappings = keyMappings.get(header.getKeySignature());
 
         //final int DEFAULT_TEMPO = 100;
         //final RatNum DEFAULT_NOTE_LENGTH = new RatNum(1, 8);
@@ -148,7 +148,7 @@ public class Parser {
                 break;
             case BARLINE:
             {
-                this.currentKey = header.getKeySignature(); 
+                this.currentKeyMappings = keyMappings.get(header.getKeySignature()); 
             }
             case VOICE_CHANGE:
                 break;
