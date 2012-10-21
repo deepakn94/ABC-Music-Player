@@ -214,14 +214,13 @@ public class Parser {
     }
     
     public Key parseKey(String noteToken) {
-        // Need to implement correct key regex, because I'm not very good with regexes lol.:
-        String KEY_REGEX = "(([ABDEFG][m]* | [C]))";
-        Pattern notePattern = Pattern.compile(KEY_REGEX);
-        Matcher noteMatcher = notePattern.matcher(noteToken);
+        String KEY_REGEX = "((Am)|(Bm)|(Cm)|(Dm)|(Em)|(Fm)|(Gm)|(A)|(B)|(C)|(D)|(E)|(F)|(G))";
+        Pattern keyPattern = Pattern.compile(KEY_REGEX);
+        Matcher keyMatcher = keyPattern.matcher(noteToken);
         
         int groupMatch = 0;
-        for (int i=1; i<=noteMatcher.groupCount(); ++i) {
-            if (noteMatcher.group(i) != null) {
+        for (int i=1; i<=keyMatcher.groupCount(); ++i) {
+            if (keyMatcher.group(i) != null) {
                 groupMatch = i;
                 break;
             }
@@ -231,7 +230,31 @@ public class Parser {
                 return Key.A_MINOR; 
             case 2:
                 return Key.B_MINOR;
-            // Finish this
+            case 3:
+            	return Key.C_MINOR;
+            case 4:
+            	return Key.D_MINOR;
+            case 5:
+            	return Key.E_MINOR;
+            case 6:
+            	return Key.F_MINOR;
+            case 7:
+            	return Key.G_MINOR;
+            case 8:
+                return Key.A_MAJOR; 
+            case 9:
+                return Key.B_MAJOR;
+            case 10:
+            	return Key.C_MAJOR;
+            case 11:
+            	return Key.D_MAJOR;
+            case 12:
+            	return Key.E_MAJOR;
+            case 13:
+            	return Key.F_MAJOR;
+            case 14:
+            	return Key.G_MAJOR;	
+            
             default:
                 throw new IllegalArgumentException("Illegal Key");
         }
