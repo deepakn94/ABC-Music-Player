@@ -16,7 +16,7 @@ public class Tuplet implements Playable
     
     public List<Note> getNotes()
     {
-        return new ArrayList<Note>();
+        return new ArrayList<Note>(notes);
     }
     
     public TupletType getType()

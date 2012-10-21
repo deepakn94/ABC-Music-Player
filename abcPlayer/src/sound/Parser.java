@@ -19,8 +19,13 @@ public class Parser {
      * @return none
      */
     
-    public static HashMap<Key, HashMap<NoteType, Accidental>> keyMappings = 
+    public final static HashMap<Key, HashMap<NoteType, Accidental>> keyMappings = 
             new HashMap<Key, HashMap<NoteType, Accidental>>();
+    
+    private final HashMap<String, ArrayList<Playable>> voiceMappings = 
+            new HashMap<String, ArrayList<Playable>>();
+    
+    private Key currentKey; 
     
     public Parser(Lexer lexer) {
         this.lex = lexer;  
@@ -95,12 +100,17 @@ public class Parser {
         map.put(NoteType.D, Accidental.SHARP);
         map.put(NoteType.F, Accidental.SHARP);
         map.put(NoteType.G, Accidental.SHARP);
-        keyMappings.put(Key.B_MAJOR, map);    
+        keyMappings.put(Key.B_MAJOR, map);  
+        
+        //NEED TO ADD MAPPINGS FOR OTHER UNUSUAL KEYS
     }
     
     public Piece Parse()
     {
+        Header header = this.parseHeader();
+        this.currentKey = header.getKeySignature();
         List<Playable> pieceSoFar = new ArrayList<Playable>();
+        
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
             case NOTE:
@@ -122,7 +132,9 @@ public class Parser {
                 pieceSoFar.add(parseQuadruplet(tok.getTokenName()));
                 break;
             case BARLINE:
-                break;
+            {
+                this.currentKey = header.getKeySignature(); 
+            }
             case VOICE_CHANGE:
                 break;
             case REPEAT:
@@ -272,6 +284,194 @@ public class Parser {
     	
     	throw new RuntimeException("Should not reach here.");
     }
+    
+    private Header parseHeader()
+    {
+        //First two fields must be index number and title 
+        Integer indexNumber = null;
+        String title = null; 
+       
+        //Optional fields
+        String composerName = null; 
+        Integer tempo = null; 
+        RatNum defaultNoteLength = null;
+        //NEED TO ADD ONE FOR METER
+        
+        //Last field must be the key 
+        Key keySignature = null;
+      
+        int iterationCount = 0; 
+        int keyIterationNum = -1; 
+        
+        Outer:
+        while (true)
+        {
+            Token tok = lex.next(); 
+            switch(tok.getTokenType())
+            {
+                case INDEX_NUMBER: 
+                {
+                    if (iterationCount != 0)
+                    {
+                        throw new IllegalArgumentException("Index number did not appear as the first element in the header");
+                    }
+                    
+                    indexNumber = Integer.valueOf(tok.getTokenName());
+                }
+                
+                case TITLE: 
+                {
+                    if (iterationCount != 1)
+                    {
+                        throw new IllegalArgumentException("Title did not appear as the second element in the header");
+                    }
+                    
+                    title = tok.getTokenName(); 
+                    break;
+                }
+                
+                case COMPOSER_NAME: 
+                {
+                    composerName = tok.getTokenName(); 
+                    break;
+                }
+                
+                case METER: 
+                {
+                    //Need to handle this
+                    break;
+                }
+                
+                case TEMPO: 
+                {
+                    tempo = Integer.valueOf(tok.getTokenName());
+                    break;
+                }
+                
+                case VOICE: 
+                {
+                    String voiceName = tok.getTokenName(); 
+                    voiceMappings.put(voiceName, new ArrayList<Playable>());
+                }
+                
+                case KEY: 
+                {
+                    keyIterationNum = iterationCount;
+                    HashMap<String, Key> helperMappings = new HashMap<String, Key>(); 
+                    
+                    //Standard major keys
+                    helperMappings.put("A", Key.A_MAJOR); 
+                    helperMappings.put("B", Key.B_MAJOR);
+                    helperMappings.put("C", Key.C_MAJOR);
+                    helperMappings.put("D", Key.D_MAJOR);
+                    helperMappings.put("E", Key.E_MAJOR);
+                    helperMappings.put("F", Key.F_MAJOR);
+                    helperMappings.put("G", Key.G_MAJOR);
+                    
+                    //Standard minor keys
+                    helperMappings.put("Am", Key.A_MINOR); 
+                    helperMappings.put("Bm", Key.B_MINOR);
+                    helperMappings.put("Cm", Key.C_MINOR);
+                    helperMappings.put("Dm", Key.D_MINOR);
+                    helperMappings.put("Em", Key.E_MINOR);
+                    helperMappings.put("Fm", Key.F_MINOR);
+                    helperMappings.put("Gm", Key.G_MINOR);
+                    
+                    //Other keys 
+                    helperMappings.put("B_", Key.B_FLAT_MAJOR); 
+                    helperMappings.put("F^m", Key.F_SHARP_MINOR);
+                    helperMappings.put("E_", Key.E_FLAT_MAJOR);
+                    helperMappings.put("C^m", Key.C_SHARP_MINOR);
+                    helperMappings.put("A_", Key.A_FLAT_MAJOR);
+                    helperMappings.put("G^m", Key.G_SHARP_MINOR);
+                    helperMappings.put("D_", Key.D_FLAT_MAJOR);
+                    
+                    helperMappings.put("B_m", Key.B_FLAT_MINOR); 
+                    helperMappings.put("F^", Key.F_SHARP_MAJOR);
+                    helperMappings.put("D^", Key.D_SHARP_MAJOR);
+                    helperMappings.put("G_", Key.G_FLAT_MAJOR);
+                    helperMappings.put("E_m", Key.E_FLAT_MINOR);
+                    helperMappings.put("C_", Key.C_FLAT_MAJOR);
+                    helperMappings.put("A_m", Key.A_FLAT_MINOR);
+                   
+                    String keyText = tok.getTokenName().trim(); 
+                    if (!helperMappings.containsKey(keyText))
+                    {
+                        keySignature = null;
+                    }
+                    
+                    else 
+                    {
+                        keySignature = helperMappings.get(keyText);
+                    }
+                    
+                    break;
+                }
+                
+                case LENGTH: 
+                {
+                    defaultNoteLength = this.getLength(tok.getTokenName());
+                    break; 
+                }
+                
+                default:
+                {
+                    break Outer;
+                }               
+            }
+            
+            if (keyIterationNum != -1 && 
+                    (iterationCount > keyIterationNum))
+            {
+                throw new IllegalArgumentException("Key did not appear as the last element in the header"); 
+            }
+            iterationCount++;
+        }
+        
+        if (indexNumber == null || title == null || keySignature == null)
+        {
+            throw new IllegalArgumentException("Required fields were not present in the header");
+        }
+        
+        Header headerToReturn = new Header(title, keySignature, indexNumber);
+        if (composerName != null)
+        {
+            headerToReturn.setComposer(composerName); 
+        }
+        
+        else 
+        {
+            headerToReturn.setComposer("Unspecified");
+        }
+        
+        if (tempo != null)
+        {
+            headerToReturn.setTempo(tempo.intValue()); 
+        }
+        
+        else 
+        {
+            headerToReturn.setTempo(Header.DEFAULT_TEMPO);
+        }
+        
+        if (defaultNoteLength != null)
+        {
+            headerToReturn.setNoteLength(defaultNoteLength);
+        }
+        
+        else 
+        {
+            headerToReturn.setNoteLength(Header.DEFAULT_NOTE_LENGTH);
+        }
+        
+        if (voiceMappings.entrySet().isEmpty())
+        {
+            voiceMappings.put(Voice.DEFAULT_VOICE_NAME, new ArrayList<Playable>());
+        }
+        
+        return headerToReturn;
+    }
+    
     
 
 }
