@@ -10,6 +10,7 @@ public class Piece
     private final List<Voice> voices;
     private final Header header;
 
+    
     public Piece(List<Voice> voices, Header header)
     {
         this.voices = new ArrayList<Voice>(voices);

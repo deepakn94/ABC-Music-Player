@@ -5,7 +5,7 @@ public class Note implements Playable
     private final NoteType noteBase; 
     private final Accidental accidental; 
     private final int octavesAboveMiddleC; 
-    private final RatNum noteLength; 
+    private RatNum noteLength; 
     
     public Note(NoteType noteBase, int octaves, RatNum noteLength)
     {
@@ -41,5 +41,15 @@ public class Note implements Playable
     public RatNum getNoteLength()
     {
         return noteLength; 
+    }
+    
+    public void setNoteLength(RatNum noteLength)
+    {
+        this.noteLength = noteLength; 
+    }
+    
+    public String toString()
+    {
+        return noteBase.toString() + octavesAboveMiddleC + noteLength.toString() + accidental.toString();
     }
 }

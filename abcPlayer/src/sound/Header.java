@@ -25,7 +25,7 @@ public class Header
         this.keySignature = keySignature; 
         
         this.setTempo(DEFAULT_TEMPO); 
-        this.seNoteLength(DEFAULT_NOTE_LENGTH); 
+        this.setNoteLength(DEFAULT_NOTE_LENGTH); 
         this.setComposer(DEFAULT_COMPOSER_VAL);
     }
     

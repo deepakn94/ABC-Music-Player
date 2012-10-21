@@ -44,7 +44,7 @@ public class Token {
 		NOTE,
 		REST,
 		CHORD,
-		DOUBLET,
+		DUPLET,
 		TRIPLET,
 		QUADRUPLET,
 		REPEAT_FIRST_ENDING,
