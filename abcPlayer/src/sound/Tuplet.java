@@ -23,4 +23,11 @@ public class Tuplet implements Playable
     {
         return type; 
     }
+    
+    public String toString() {
+        String s = "" + type.toString() + " ";
+        for (Note n : this.notes)
+            s = s + n.toString();
+        return s;   
+    }
 }

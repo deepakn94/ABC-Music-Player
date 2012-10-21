@@ -143,7 +143,7 @@ public class Lexer {
 		groupTypeMatching.put(9, TokenType.REST);
 		groupTypeMatching.put(11, TokenType.NOTE);
 		groupTypeMatching.put(15, TokenType.CHORD);
-		groupTypeMatching.put(20, TokenType.DOUBLET);
+		groupTypeMatching.put(20, TokenType.DUPLET);
 		groupTypeMatching.put(24, TokenType.TRIPLET);
 		groupTypeMatching.put(28, TokenType.QUADRUPLET);
 		groupTypeMatching.put(32, TokenType.START_REPEAT);
