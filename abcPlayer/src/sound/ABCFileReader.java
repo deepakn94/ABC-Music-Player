@@ -44,12 +44,16 @@ public class ABCFileReader {
 		try {
 			String content = file_reader.readContent();
 			//System.out.println(content);
+			
 			Lexer newLexer = new Lexer(content);
+			Parser parser = new Parser(newLexer);
+			System.out.println(parser.Parse().toString());
 			Token currentToken = newLexer.next();
+			/*
 			while (currentToken.getTokenType()!=TokenType.END_OF_PIECE) {
 				System.out.println(currentToken.getTokenName() + ":" + currentToken.getTokenType());
 				currentToken = newLexer.next();
-			}
+			}*/
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

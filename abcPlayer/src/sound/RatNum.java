@@ -44,4 +44,9 @@ public class RatNum
            return gcd(b, a  % b);
        }
     }
+    
+    @Override
+    public String toString() {
+    	return numer + "/" + denom;
+    }
 }

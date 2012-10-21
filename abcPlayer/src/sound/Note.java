@@ -48,8 +48,9 @@ public class Note implements Playable
         this.noteLength = noteLength; 
     }
     
+    @Override
     public String toString()
     {
-        return noteBase.toString() + octavesAboveMiddleC + noteLength.toString() + accidental.toString();
+        return "Note(" + noteBase.toString() + octavesAboveMiddleC + noteLength.toString() + accidental.toString() + ")";
     }
 }

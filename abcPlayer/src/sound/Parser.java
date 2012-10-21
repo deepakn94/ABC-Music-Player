@@ -389,7 +389,7 @@ public class Parser {
     	String length = lengthMatcher.find() ? lengthMatcher.group(0) : "";
 
     	if (lengthMatcher.group(1) != null) {
-    		String[] rational = length.split("'");
+    		String[] rational = length.split("/");
     		if (rational.length != 2) throw new RuntimeException("Should not occur");
     		return new RatNum(Integer.parseInt(rational[0]), Integer.parseInt(rational[1]));
     	}
@@ -425,6 +425,7 @@ public class Parser {
         Outer:
         while (true) {
             Token tok = lex.next(); 
+            
             switch(tok.getTokenType()) {
                 case INDEX_NUMBER: 
                     if (iterationCount != 0) {
@@ -432,6 +433,7 @@ public class Parser {
                     }
                     
                     indexNumber = Integer.valueOf(tok.getTokenName());
+                    break;
                 
                 case TITLE: 
                     if (iterationCount != 1)  {

@@ -16,7 +16,7 @@ public class Rest implements Playable
     
     @Override
     public String toString() {
-    	String rest = "z" + (length.toString());
+    	String rest = "Rest(" + (length.toString()) + ")";
     	return rest;
     }
 }

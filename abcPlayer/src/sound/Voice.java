@@ -29,8 +29,9 @@ public class Voice
     @Override
     public String toString() {
     	StringBuilder newStringBuilder = new StringBuilder();
+    	newStringBuilder.append("Voice("+name+")" + "\n");
     	for (Playable elementOfVoice: elementsOfVoice) {
-    		newStringBuilder.append(elementOfVoice.toString());
+    		newStringBuilder.append(elementOfVoice.toString() + " ");
     	}
     	return newStringBuilder.toString();
     }

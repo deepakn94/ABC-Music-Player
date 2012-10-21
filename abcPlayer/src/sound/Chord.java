@@ -18,9 +18,10 @@ public class Chord implements Playable
     }
     
     public String toString() {
-        String s = "";
+        String s = "Chord(";
         for (Note n : this.notes)
             s = s + n.toString();
+        s= s + ")";
         return s;
         
     }
