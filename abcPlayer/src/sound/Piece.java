@@ -58,6 +58,7 @@ public class Piece
 				    sequencePlayer.addNote(spn.getPitch().toMidiNote(), spn.getStartTicks(), spn.getNumTicks());
 				}
 				
+				System.out.println(sequencePlayer);
 				sequencePlayer.play(); 
 	    	}
 		} catch (MidiUnavailableException e) {
