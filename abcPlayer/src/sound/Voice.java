@@ -36,13 +36,35 @@ public class Voice
     	return newStringBuilder.toString();
     }
     
-    public List<SequencePlayerNote> play(int numTicks) {
-    	int ticks = 0;
+    public int findLCMOfNoteDenoms()
+    {
+        int lcm = -1; 
+        for(int i = 0; i < elementsOfVoice.size(); i++)
+        {
+            int denomOfElement = elementsOfVoice.get(i).getLength().getDenom();
+            if (i == 0)
+            {
+                lcm = denomOfElement;
+            }
+            
+            else 
+            {
+                lcm = Utilities.LCM(lcm, denomOfElement); 
+            }
+        }
+        
+        return lcm;
+    }
+    
+    public List<SequencePlayerNote> play(RatNum defaultNoteLength, int numTicksPerQuarter) {
+        
+        int ticks = 0;
     	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
     	for (Playable elementOfVoice: elementsOfVoice) {
-    		sequencePlayerNotes.addAll(elementOfVoice.play(ticks, numTicks)); //Need to handle timing here
+    		sequencePlayerNotes.addAll(elementOfVoice.play(ticks, numTicksPerQuarter, defaultNoteLength)); //Need to handle timing here
     		RatNum length = elementOfVoice.getLength();
-    		ticks += (numTicks * (length.getNumer()/length.getDenom()));
+    		ticks += (numTicksPerQuarter * length.getNumer())
+    		        / (length.getDenom());
     	}
     	return sequencePlayerNotes;
     }

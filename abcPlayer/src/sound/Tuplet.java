@@ -32,12 +32,13 @@ public class Tuplet implements Playable
         return s;   
     }
 
-	public List<SequencePlayerNote> play(int startTicks, int numTicks) {
+	public List<SequencePlayerNote> play(int startTicks, int numTicks, RatNum defaultNoteLength) {
 		List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
 		int ticks = startTicks;
 		for (Note note:notes) {
-			sequencePlayerNotes.addAll(note.play(ticks, numTicks));
-			ticks += (numTicks * (note.getLength().getNumer()/note.getLength().getDenom()));
+			sequencePlayerNotes.addAll(note.play(ticks, numTicks, defaultNoteLength));
+			ticks += (numTicks * note.getLength().getNumer())/
+			        (note.getLength().getDenom());
 		}
 		return sequencePlayerNotes;
 	}

@@ -23,7 +23,7 @@ public class Rest implements Playable
     	return rest;
     }
 
-	public List<SequencePlayerNote> play(int startTicks, int numTicks) {
+	public List<SequencePlayerNote> play(int startTicks, int numTicks, RatNum defaultNoteLength) {
 		return new ArrayList<SequencePlayerNote> ();
 	}
 }

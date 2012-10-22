@@ -37,11 +37,28 @@ public class Piece
     	return newString.toString();
     }
     
+    private int findLCMOfAllNoteDenomsAcrossVoices()
+    {
+        int lcm = voices.get(0).findLCMOfNoteDenoms();
+        for(int i = 1; i < voices.size(); i++)
+        {
+            lcm = Utilities.LCM(lcm, voices.get(i).findLCMOfNoteDenoms());
+        }
+        
+        return lcm;
+    }
     public void play() {
+        final int NUM_TICKS_PER_QUARTER = this.findLCMOfAllNoteDenomsAcrossVoices();
     	try {
-			SequencePlayer sequencePlayer = new SequencePlayer(100, 12);
+			SequencePlayer sequencePlayer = new SequencePlayer(this.header.getTempo(), NUM_TICKS_PER_QUARTER);
 			for (Voice voice : voices) {
+				List<SequencePlayerNote> toPlay = voice.play(this.header.getDefaultNoteLength(), NUM_TICKS_PER_QUARTER);
+				for (SequencePlayerNote spn: toPlay)
+				{
+				    sequencePlayer.addNote(spn.getPitch().toMidiNote(), spn.getStartTicks(), spn.getNumTicks());
+				}
 				
+				sequencePlayer.play(); 
 	    	}
 		} catch (MidiUnavailableException e) {
 			// TODO Auto-generated catch block
@@ -50,6 +67,5 @@ public class Piece
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
     }
 }

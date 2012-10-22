@@ -11,7 +11,7 @@ public class RatNum
         {
             throw new IllegalArgumentException("Denominator of a rational number cannot be zero");
         }
-        int gcd = gcd(numer, denom); 
+        int gcd = Utilities.GCD(numer, denom); 
         this.numer = numer/gcd; 
         this.denom = denom/gcd; 
     }
@@ -30,19 +30,6 @@ public class RatNum
     public int getDenom()
     {
         return denom; 
-    }
-    
-    private int gcd(int a, int b)
-    {  
-       if (b == 0)
-       {
-           return a;
-        
-       }    
-       else 
-       {
-           return gcd(b, a  % b);
-       }
     }
     
     @Override

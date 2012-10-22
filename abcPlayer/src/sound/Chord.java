@@ -26,10 +26,10 @@ public class Chord implements Playable
         
     }
 
-	public List<SequencePlayerNote> play(int startTicks, int numTicks) {
+	public List<SequencePlayerNote> play(int startTicks, int numTicks, RatNum defaultNoteLength) {
     	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
 		for (Note note:notes) {
-			sequencePlayerNotes.addAll(note.play(startTicks, numTicks));
+			sequencePlayerNotes.addAll(note.play(startTicks, numTicks, defaultNoteLength));
 		}
 		return sequencePlayerNotes;
 	}

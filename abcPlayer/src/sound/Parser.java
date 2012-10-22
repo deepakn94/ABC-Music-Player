@@ -212,9 +212,19 @@ public class Parser {
         NoteType noteName = getNote(noteToken);
         int octave = getOctave(noteToken);
         RatNum noteLength = getLength(noteToken);
-        if (currentKeyMappings.containsKey(noteName)) {
-        	noteAccidental = currentKeyMappings.get(noteName);
+        
+        if (noteAccidental == Accidental.ABSENT)
+        {
+            if (currentKeyMappings.containsKey(noteName)) {
+                noteAccidental = currentKeyMappings.get(noteName);
+            }   
         }
+        
+        else
+        {
+            currentKeyMappings.put(noteName, noteAccidental);
+        }
+        
         Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
                             : new Note(noteName, octave, noteLength, noteAccidental);
         return parsedNote;
@@ -294,7 +304,6 @@ public class Parser {
         
         return new Tuplet(TupletType.QUADRUPLET, quadruplet);
     }
-    
     
     private Accidental getAccidental(String noteToken) {
     	String ACCIDENTAL_REGEX = "(__)|(_)|(\\^\\^)|(\\^)|(=)";

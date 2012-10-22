@@ -52,11 +52,14 @@ public class Note implements Playable
         return "Note(" + noteBase.toString() + " " + octavesAboveMiddleC + " " + noteLength.toString() + " " + accidental.toString() + ") ";
     }
     
-    public List<SequencePlayerNote> play(int startTicks, int numTicks) {
+    public List<SequencePlayerNote> play(int startTicks, int numTicks, RatNum defaultNoteLength) {
     	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
     	int numer = this.noteLength.getNumer();
     	int denom = this.noteLength.getDenom();
-    	int time = (numer/denom) * numTicks;
+    	int defaultDenom = defaultNoteLength.getDenom(); 
+    	int defaultNum = defaultNoteLength.getNumer(); 
+    	int time = (defaultDenom * denom)/(4 * defaultNum * numer);
+    	
     	Pitch notePitch;
     	switch (noteBase) {
     	case C:
@@ -100,6 +103,7 @@ public class Note implements Playable
     		numTranspose -= 2;
     		break;
     	case NATURAL:
+    	case ABSENT:
     		break;
     	default:
     		throw new IllegalArgumentException("Illegal accidental");
