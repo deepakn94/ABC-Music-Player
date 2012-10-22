@@ -26,7 +26,6 @@ public class Chord implements Playable
         
     }
 
-    @Override
 	public List<SequencePlayerNote> play(int startTicks, int numTicks) {
     	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
 		for (Note note:notes) {
@@ -34,6 +33,19 @@ public class Chord implements Playable
 		}
 		return sequencePlayerNotes;
 	}
+    
+    public RatNum getLength() {
+    	double max = 0;
+    	RatNum maxRatNum = null;
+    	for (Note note : notes) {
+    		double noteLength = (double)note.getLength().getNumer() / (double)note.getLength().getNumer();
+    		if ((maxRatNum == null) || max<noteLength) {
+    			maxRatNum = note.getLength();
+    			max = noteLength;
+    		} 
+    	}
+    	return maxRatNum;
+    }
 }
 
 	

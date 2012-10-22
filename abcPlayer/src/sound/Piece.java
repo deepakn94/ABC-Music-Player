@@ -3,6 +3,9 @@ package sound;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
+
 public class Piece 
 {   
     private final List<Voice> voices;
@@ -32,5 +35,21 @@ public class Piece
     		newString.append(voice.toString());
     	}
     	return newString.toString();
+    }
+    
+    public void play() {
+    	try {
+			SequencePlayer sequencePlayer = new SequencePlayer(100, 12);
+			for (Voice voice : voices) {
+				
+	    	}
+		} catch (MidiUnavailableException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InvalidMidiDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	
     }
 }

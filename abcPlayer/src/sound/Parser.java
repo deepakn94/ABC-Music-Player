@@ -244,7 +244,7 @@ public class Parser {
         
         while (noteMatcher.find(index)) {
             Note dupletNote = parseNote(noteMatcher.group(0));
-            RatNum newNoteLength = new RatNum(dupletNote.getNoteLength().getNumer()*3, dupletNote.getNoteLength().getDenom()*2);
+            RatNum newNoteLength = new RatNum(dupletNote.getLength().getNumer()*3, dupletNote.getLength().getDenom()*2);
             dupletNote.setNoteLength(newNoteLength);
             duplet.add(dupletNote);
             index = noteMatcher.end();
@@ -264,7 +264,7 @@ public class Parser {
         
         while (noteMatcher.find(index)) {
             Note tripletNote = parseNote(noteMatcher.group(0));
-            RatNum newNoteLength = new RatNum(tripletNote.getNoteLength().getNumer()*2, tripletNote.getNoteLength().getDenom()*3);
+            RatNum newNoteLength = new RatNum(tripletNote.getLength().getNumer()*2, tripletNote.getLength().getDenom()*3);
             tripletNote.setNoteLength(newNoteLength);
             triplet.add(tripletNote);
             index = noteMatcher.end();
@@ -284,7 +284,7 @@ public class Parser {
         
         while (noteMatcher.find(index)) {
             Note quadrupletNote = parseNote(noteMatcher.group(0));
-            RatNum newNoteLength = new RatNum(quadrupletNote.getNoteLength().getNumer()*2, quadrupletNote.getNoteLength().getDenom()*3);
+            RatNum newNoteLength = new RatNum(quadrupletNote.getLength().getNumer()*2, quadrupletNote.getLength().getDenom()*3);
             quadrupletNote.setNoteLength(newNoteLength);
             quadruplet.add(quadrupletNote);
             index = noteMatcher.end();

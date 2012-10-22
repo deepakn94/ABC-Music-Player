@@ -23,7 +23,6 @@ public class Rest implements Playable
     	return rest;
     }
 
-	@Override
 	public List<SequencePlayerNote> play(int startTicks, int numTicks) {
 		return new ArrayList<SequencePlayerNote> ();
 	}

@@ -41,6 +41,8 @@ public class Voice
     	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
     	for (Playable elementOfVoice: elementsOfVoice) {
     		sequencePlayerNotes.addAll(elementOfVoice.play(ticks, numTicks)); //Need to handle timing here
+    		RatNum length = elementOfVoice.getLength();
+    		ticks += (numTicks * (length.getNumer()/length.getDenom()));
     	}
     	return sequencePlayerNotes;
     }

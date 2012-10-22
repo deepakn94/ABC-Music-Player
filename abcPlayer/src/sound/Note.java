@@ -41,11 +41,6 @@ public class Note implements Playable
         return octavesAboveMiddleC;
     }
     
-    public RatNum getNoteLength()
-    {
-        return noteLength; 
-    }
-    
     public void setNoteLength(RatNum noteLength)
     {
         this.noteLength = noteLength; 
@@ -57,8 +52,6 @@ public class Note implements Playable
         return "Note(" + noteBase.toString() + " " + octavesAboveMiddleC + " " + noteLength.toString() + " " + accidental.toString() + ") ";
     }
     
-
-    @Override
     public List<SequencePlayerNote> play(int startTicks, int numTicks) {
     	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
     	int numer = this.noteLength.getNumer();
@@ -114,5 +107,9 @@ public class Note implements Playable
     	
     	sequencePlayerNotes.add(new SequencePlayerNote(notePitch.transpose(numTranspose), startTicks, time));
 		return sequencePlayerNotes;
+    }
+    
+    public RatNum getLength() {
+    	return this.noteLength;
     }
 }
