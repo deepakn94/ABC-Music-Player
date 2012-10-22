@@ -48,9 +48,10 @@ public class Piece
         return lcm;
     }
     public void play() {
-        final int NUM_TICKS_PER_QUARTER = this.findLCMOfAllNoteDenomsAcrossVoices();
+        final int NUM_TICKS_PER_QUARTER = this.findLCMOfAllNoteDenomsAcrossVoices() * this.header.getDefaultNoteLength().getDenom();
+        System.out.println(NUM_TICKS_PER_QUARTER);
     	try {
-			SequencePlayer sequencePlayer = new SequencePlayer(this.header.getTempo(), NUM_TICKS_PER_QUARTER);
+			SequencePlayer sequencePlayer = new SequencePlayer(/*this.header.getTempo()*/80, NUM_TICKS_PER_QUARTER);
 			for (Voice voice : voices) {
 				List<SequencePlayerNote> toPlay = voice.play(this.header.getDefaultNoteLength(), NUM_TICKS_PER_QUARTER);
 				for (SequencePlayerNote spn: toPlay)
@@ -58,8 +59,11 @@ public class Piece
 				    sequencePlayer.addNote(spn.getPitch().toMidiNote(), spn.getStartTicks(), spn.getNumTicks());
 				}
 				
-				sequencePlayer.play(); 
+				 
 	    	}
+			System.out.println(sequencePlayer);
+			sequencePlayer.play();
+			
 		} catch (MidiUnavailableException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
