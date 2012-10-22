@@ -39,7 +39,7 @@ public class ABCFileReader {
 	}
 	
 	public static void main(String[] args) {
-	    String file_name = "sample_abc/piece2.abc";
+	    String file_name = "sample_abc/invention.abc";
 		ABCFileReader file_reader = new ABCFileReader(file_name);
 		try {
 			String content = file_reader.readContent();
@@ -48,8 +48,8 @@ public class ABCFileReader {
 			Lexer newLexer = new Lexer(content);
 			Parser parser = new Parser(newLexer);
 			System.out.println(parser.Parse().toString());
-			Token currentToken = newLexer.next();
-			/*
+			/*Token currentToken = newLexer.next();
+			
 			while (currentToken.getTokenType()!=TokenType.END_OF_PIECE) {
 				System.out.println(currentToken.getTokenName() + ":" + currentToken.getTokenType());
 				currentToken = newLexer.next();

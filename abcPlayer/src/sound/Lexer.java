@@ -80,7 +80,7 @@ public class Lexer {
     
     private final Matcher matcher;
     
-    private static final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+|[0-9]+)?";
+    private static final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]*/[0-9]*|[0-9]+)?";
     
     private static HashMap<Integer, TokenType> groupTypeMatching;
     
@@ -101,11 +101,11 @@ public class Lexer {
 		"|" +
 		"(K\\s*:\\s*[a-gA-G][#b]?m?\n)" + //Key
 		"|" +
-		"(z([0-9]+/[0-9]+|[0-9]+)?)" + //Rest
+		"(z([0-9]*/[0-9]*|[0-9]+)?)" + //Rest
 		"|" +
 		"((" + NOTE_EXPRESSION + ")\\s*)" +//Note
 		"|" +
-		"(\\[(" + NOTE_EXPRESSION + ")+\\]([0-9]+/[0-9]+)?\\s*)" + //Chord
+		"(\\[(" + NOTE_EXPRESSION + ")+\\]([0-9]*/[0-9]*)?\\s*)" + //Chord
 		"|" +
 		"(\\(2(" + NOTE_EXPRESSION + "){2}\\s*)" + //Doublet
 		"|" +

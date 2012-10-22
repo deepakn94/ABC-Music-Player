@@ -21,7 +21,7 @@ public class Chord implements Playable
         String s = "Chord(";
         for (Note n : this.notes)
             s = s + n.toString() + " ";
-        s= s.trim() + ")\n";
+        s= s.trim() + ")";
         return s;
         
     }

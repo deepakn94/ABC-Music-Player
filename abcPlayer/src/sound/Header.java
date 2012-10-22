@@ -71,4 +71,14 @@ public class Header
     public void setTempo(int tempo) {
         this.tempo = tempo;
     }
+    
+    public String toString() {
+    	String result = "Title : " + title + "\n";
+    	result += "Composer : " + composer + "\n";
+    	result += "Key Signature : " + keySignature + "\n";
+    	result += "Index Number : " + indexNumber + "\n";
+    	result += "Note length : " + noteLength + "\n";
+    	result += "Tempo : " + tempo + "\n";
+    	return result;
+    }
 }

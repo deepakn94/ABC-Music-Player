@@ -28,7 +28,7 @@ public class Tuplet implements Playable
         String s = "Tuplet(" ;
         for (Note n : this.notes)
             s = s + n.toString() + " ";
-        s = s.trim() + ")\n";
+        s = s.trim() + ")";
         return s;   
     }
 

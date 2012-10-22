@@ -31,8 +31,17 @@ public class Voice
     	StringBuilder newStringBuilder = new StringBuilder();
     	newStringBuilder.append("Voice("+name+")" + "\n");
     	for (Playable elementOfVoice: elementsOfVoice) {
-    		newStringBuilder.append(elementOfVoice.toString() + " ");
+    		newStringBuilder.append(elementOfVoice.toString() + "\n");
     	}
     	return newStringBuilder.toString();
+    }
+    
+    public List<SequencePlayerNote> play(int numTicks) {
+    	int ticks = 0;
+    	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
+    	for (Playable elementOfVoice: elementsOfVoice) {
+    		sequencePlayerNotes.addAll(elementOfVoice.play(ticks, numTicks)); //Need to handle timing here
+    	}
+    	return sequencePlayerNotes;
     }
 }

@@ -147,7 +147,6 @@ public class Parser {
                 break;
 
             case VOICE:
-            	System.out.println("Reached voice change");
                 currentVoiceName = tok.getTokenName();
                 break;
                 
@@ -201,16 +200,6 @@ public class Parser {
         
         return new Piece(voicesInPiece, header);
     }
-    
-    public RatNum parseNoteLength(String noteToken) {
-        
-        int i = 0;
-        while (noteToken.charAt(i) != '/') {
-            if (i++ > noteToken.length())
-                return new RatNum(Integer.parseInt(noteToken), 1);     
-        }
-        return new RatNum(Integer.parseInt(noteToken.substring(0, i)), Integer.parseInt(noteToken.substring(i)));
-    }
   
     public Rest parseRest(String noteToken) {
         RatNum restLength = getLength(noteToken);
@@ -230,7 +219,7 @@ public class Parser {
                             : new Note(noteName, octave, noteLength, noteAccidental);
         return parsedNote;
     }
-    final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]+/[0-9]+|[0-9]+)?";
+    final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]*/[0-9]*|[0-9]+)?";
     
     public Chord parseChord(String noteToken) {
         List<Note> chords = new ArrayList<Note>();
@@ -387,7 +376,7 @@ public class Parser {
     }
     
     private RatNum getLength(String noteToken) {
-    	String LENGTH_REGEX = "([0-9]+/[0-9]+)|([0-9]+)";
+    	String LENGTH_REGEX = "([0-9]+/[0-9]+)|(/[0-9]+)|([0-9]+/)|(/)|([0-9]+)";
     	Pattern lengthPattern = Pattern.compile(LENGTH_REGEX);
     	
     	Matcher lengthMatcher = lengthPattern.matcher(noteToken);
@@ -396,20 +385,30 @@ public class Parser {
     	if (lengthMatcher.find(0)) {
 	    	if (lengthMatcher.group(1) != null) {
 	    		String[] rational = length.split("/");
-	    		if (rational.length != 2) throw new RuntimeException("Should not occur");
-	    		return new RatNum(Integer.parseInt(rational[0]), Integer.parseInt(rational[1]));
+	    		if (rational.length == 2) {
+	    			System.out.println(length);
+	    			return new RatNum(Integer.parseInt(rational[0]), Integer.parseInt(rational[1]));
+	    		}
+	    		throw new IllegalArgumentException("Should not reach here");
+	    	}
+	    	
+	    	if (lengthMatcher.group(2) != null) {
+	    		return new RatNum(1,Integer.parseInt(length.substring(1)));
+	    	}
+	    	
+	    	if (lengthMatcher.group(3) != null) {
+	    		return new RatNum(Integer.parseInt(length.substring(0, length.indexOf('/'))),2);
+	    	}
+	    	
+	    	if (lengthMatcher.group(4)!= null) {
+	    		return new RatNum(1,2);
 	    	}
     	
-	    	if (lengthMatcher.group(2) != null) {
+	    	if (lengthMatcher.group(5) != null) {
 	    		return new RatNum(Integer.parseInt(length));
 	    	}
     	}
-    	
-    	if (length == "") {
-    		return new RatNum(1);
-    	}
-    	
-    	throw new RuntimeException("Should not reach here.");
+    	return new RatNum(1);
     }
     
     private Header parseHeader() {
