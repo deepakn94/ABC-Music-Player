@@ -47,29 +47,22 @@ public class Piece
         
         return lcm;
     }
-    public void play() {
-        final int NUM_TICKS_PER_QUARTER = this.findLCMOfAllNoteDenomsAcrossVoices() * this.header.getDefaultNoteLength().getDenom();
+    public SequencePlayer play() throws MidiUnavailableException, InvalidMidiDataException {
+        final int NUM_TICKS_PER_QUARTER = (this.findLCMOfAllNoteDenomsAcrossVoices() * this.header.getDefaultNoteLength().getDenom());
         System.out.println(NUM_TICKS_PER_QUARTER);
-    	try {
-			SequencePlayer sequencePlayer = new SequencePlayer(/*this.header.getTempo()*/80, NUM_TICKS_PER_QUARTER);
-			for (Voice voice : voices) {
-				List<SequencePlayerNote> toPlay = voice.play(this.header.getDefaultNoteLength(), NUM_TICKS_PER_QUARTER);
-				for (SequencePlayerNote spn: toPlay)
-				{
-				    sequencePlayer.addNote(spn.getPitch().toMidiNote(), spn.getStartTicks(), spn.getNumTicks());
-				}
-				
-				 
-	    	}
-			System.out.println(sequencePlayer);
-			sequencePlayer.play();
+
+		int tempo = (this.header.getTempo() * this.header.getDefaultNoteLength().getNumer() * 4)/(this.header.getDefaultNoteLength().getDenom());
+		SequencePlayer sequencePlayer = new SequencePlayer(tempo, NUM_TICKS_PER_QUARTER);
+		for (Voice voice : voices) {
+			List<SequencePlayerNote> toPlay = voice.play(this.header.getDefaultNoteLength(), NUM_TICKS_PER_QUARTER);
+			for (SequencePlayerNote spn: toPlay)
+			{
+			    sequencePlayer.addNote(spn.getPitch().toMidiNote(), spn.getStartTicks(), spn.getNumTicks());
+			}
+    	}
+		System.out.println(sequencePlayer);
+		sequencePlayer.play();
+		return sequencePlayer;
 			
-		} catch (MidiUnavailableException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidMidiDataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
     }
 }

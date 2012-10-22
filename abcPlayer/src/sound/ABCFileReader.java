@@ -5,7 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
-import sound.Token.TokenType;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
 
 public class ABCFileReader {
 	private String filename;
@@ -39,7 +40,7 @@ public class ABCFileReader {
 	}
 	
 	public static void main(String[] args) {
-	    String file_name = "sample_abc/fur_elise.abc";
+	    String file_name = "sample_abc/piece2.abc";
 		ABCFileReader file_reader = new ABCFileReader(file_name);
 		try {
 			String content = file_reader.readContent();
@@ -50,7 +51,15 @@ public class ABCFileReader {
 			
 			Piece pieceToPlay = parser.Parse(); 
 			System.out.println(pieceToPlay);
-			pieceToPlay.play(); 
+			try {
+				pieceToPlay.play();
+			} catch (MidiUnavailableException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvalidMidiDataException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			
 			/*Token currentToken = newLexer.next();
 			
