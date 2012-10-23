@@ -47,6 +47,8 @@ public class Piece
         
         return lcm;
     }
+
+    	
     public SequencePlayer play() throws MidiUnavailableException, InvalidMidiDataException {
         final int NUM_TICKS_PER_QUARTER = (this.findLCMOfAllNoteDenomsAcrossVoices() * this.header.getDefaultNoteLength().getDenom());
         System.out.println(NUM_TICKS_PER_QUARTER);
@@ -63,6 +65,5 @@ public class Piece
 		System.out.println(sequencePlayer);
 		sequencePlayer.play();
 		return sequencePlayer;
-			
     }
 }

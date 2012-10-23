@@ -63,8 +63,8 @@ public class Voice
     	for (Playable elementOfVoice: elementsOfVoice) {
     		sequencePlayerNotes.addAll(elementOfVoice.play(ticks, numTicksPerQuarter, defaultNoteLength)); //Need to handle timing here
     		RatNum length = elementOfVoice.getLength();
-    		ticks += (4 * numTicksPerQuarter * length.getNumer() * defaultNoteLength.getNumer())
-    		        / (length.getDenom() * defaultNoteLength.getDenom());
+    		ticks += (numTicksPerQuarter * length.getNumer())
+    		        / (length.getDenom());
     	}
     	return sequencePlayerNotes;
     }
