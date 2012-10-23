@@ -50,7 +50,7 @@ public class Piece
 
     	
     public SequencePlayer play() throws MidiUnavailableException, InvalidMidiDataException {
-        final int NUM_TICKS_PER_QUARTER = (this.findLCMOfAllNoteDenomsAcrossVoices() * this.header.getDefaultNoteLength().getDenom());
+        final int NUM_TICKS_PER_QUARTER = this.findLCMOfAllNoteDenomsAcrossVoices() * this.header.getDefaultNoteLength().getDenom();
         System.out.println(NUM_TICKS_PER_QUARTER);
 
 		int tempo = (this.header.getTempo() * this.header.getDefaultNoteLength().getNumer() * 4)/(this.header.getDefaultNoteLength().getDenom());
@@ -62,7 +62,7 @@ public class Piece
 			    sequencePlayer.addNote(spn.getPitch().toMidiNote(), spn.getStartTicks(), spn.getNumTicks());
 			}
     	}
-		System.out.println(sequencePlayer);
+		//System.out.println(sequencePlayer);
 		sequencePlayer.play();
 		return sequencePlayer;
     }
