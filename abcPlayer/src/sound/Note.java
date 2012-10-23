@@ -58,8 +58,7 @@ public class Note implements Playable
     	int denom = this.noteLength.getDenom();
     	int defaultDenom = defaultNoteLength.getDenom(); 
     	int defaultNum = defaultNoteLength.getNumer(); 
-    	//int time = (defaultDenom * denom)/(4 * defaultNum * numer);
-    	int time = (defaultNum * numer * 4 * numTicks)/(defaultDenom * denom);
+    	int ticks = (numer * 4 * numTicks * defaultNum)/(denom * defaultDenom);
     	
     	Pitch notePitch;
     	switch (noteBase) {
@@ -110,7 +109,7 @@ public class Note implements Playable
     		throw new IllegalArgumentException("Illegal accidental");
     	}
     	
-    	sequencePlayerNotes.add(new SequencePlayerNote(notePitch.transpose(numTranspose), startTicks, time));
+    	sequencePlayerNotes.add(new SequencePlayerNote(notePitch.transpose(numTranspose), startTicks, ticks));
 		return sequencePlayerNotes;
     }
     

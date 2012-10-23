@@ -24,11 +24,14 @@ public class Parser {
     private final HashMap<String, List<Playable>> voiceMappings;
    
     private HashMap<NoteType, Accidental> currentKeyMappings;
+
+    private HashMap<String, int[]> indices;
     
     public Parser(Lexer lexer) {
         this.lex = lexer;  
         Parser.initializeKeyMappingsConstant();
         voiceMappings = new HashMap<String, List<Playable>>();
+        indices = new HashMap<String, int[]>();
     }
     
     private static void initializeKeyMappingsConstant()
@@ -115,10 +118,6 @@ public class Parser {
         
         this.currentKeyMappings = new HashMap<NoteType, Accidental> (KEY_MAPPINGS.get(header.getKeySignature()));
 
-        int startRepeatIndex = 0;
-        int endRepeatIndex = -1;
-        int firstRepeatIndex = -1;
-        int secondRepeatIndex = -1;
         
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
@@ -147,46 +146,43 @@ public class Parser {
                 break;
 
             case VOICE:
-                currentVoiceName = tok.getTokenName();
-                break;
                 
+                currentVoiceName = tok.getTokenName();
+                if (!indices.containsKey(currentVoiceName)) {              
+                    int[] index = {0, 0, 0, 0}; // startIndex, endIndex, firstRepeatIndex, secondRepeatIndex
+                    indices.put(currentVoiceName, index);
+                }
+
+                break;
             case START_REPEAT:
-                startRepeatIndex = voiceMappings.get(currentVoiceName).size();
+                indices.get(currentVoiceName)[0] = voiceMappings.get(currentVoiceName).size();
+                
                 break; 
             case END_REPEAT:
-                endRepeatIndex = voiceMappings.get(currentVoiceName).size() - 1;
-
-                if (firstRepeatIndex != -1) {
-                    for (int i = startRepeatIndex; i<firstRepeatIndex; i++) {
+                int[] voiceIndices = indices.get(currentVoiceName);
+                voiceIndices[1] = voiceMappings.get(currentVoiceName).size();
+                
+                if (voiceIndices[2] != -1) {
+                    for (int i = voiceIndices[0]; i<voiceIndices[2]; i++) {
                         voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
                     }
-                    if (secondRepeatIndex != -1) {
-                        for (int i = secondRepeatIndex; i<endRepeatIndex; i++) {
-                            voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
-                        }
-                    }
-
-                    firstRepeatIndex = -1;
-                    secondRepeatIndex = -1;
+                    voiceIndices[2] = -1;
                 }
                 else {
-                    for (int i = startRepeatIndex; i < endRepeatIndex; i++) {
+                    for (int i = voiceIndices[0]; i < voiceIndices[1]; i++) {
                         voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
                     }
                 }                 
                 break; 
-            case REPEAT_FIRST_ENDING:
-                firstRepeatIndex = voiceMappings.get(currentVoiceName).size();
-                secondRepeatIndex = -1;
+            case REPEAT_FIRST_ENDING:    
+                indices.get(currentVoiceName)[2] = voiceMappings.get(currentVoiceName).size();          
                 break;
             case REPEAT_SECOND_ENDING:
-                while (firstRepeatIndex != -1 && tok.getTokenType() != Token.TokenType.END_REPEAT) {
-                    tok = this.lex.next();
-                }
-                secondRepeatIndex = voiceMappings.get(currentVoiceName).size();
-                break;
+                indices.get(currentVoiceName)[3] = voiceMappings.get(currentVoiceName).size();
+                
+                break;          
             default:
-                break;
+                throw new RuntimeException("Unrecognized token!");
             }
             
         }
@@ -395,7 +391,6 @@ public class Parser {
 	    	if (lengthMatcher.group(1) != null) {
 	    		String[] rational = length.split("/");
 	    		if (rational.length == 2) {
-	    			System.out.println(length);
 	    			return new RatNum(Integer.parseInt(rational[0]), Integer.parseInt(rational[1]));
 	    		}
 	    		throw new IllegalArgumentException("Should not reach here");
@@ -535,6 +530,7 @@ public class Parser {
    
             iterationCount++;
         }
+        
         if (indexNumber == null || title == null || keySignature == null) {
             throw new IllegalArgumentException("Required fields were not present in the header");
         }

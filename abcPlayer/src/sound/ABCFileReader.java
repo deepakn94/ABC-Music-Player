@@ -40,7 +40,9 @@ public class ABCFileReader {
 	}
 	
 	public static void main(String[] args) {
+
 	    String file_name = "sample_abc/fur_elise.abc";
+
 		ABCFileReader file_reader = new ABCFileReader(file_name);
 		try {
 			String content = file_reader.readContent();
@@ -50,7 +52,7 @@ public class ABCFileReader {
 			Parser parser = new Parser(newLexer);
 			
 			Piece pieceToPlay = parser.Parse(); 
-			System.out.println(pieceToPlay);
+			//System.out.println(pieceToPlay);
 			try {
 				pieceToPlay.play();
 			} catch (MidiUnavailableException e) {
