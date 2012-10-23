@@ -50,9 +50,10 @@ public class Piece
 
     	
     public SequencePlayer play() throws MidiUnavailableException, InvalidMidiDataException {
-        final int NUM_TICKS_PER_QUARTER = this.findLCMOfAllNoteDenomsAcrossVoices() * this.header.getDefaultNoteLength().getDenom();
-        System.out.println(NUM_TICKS_PER_QUARTER);
+        final int NUM_TICKS_PER_QUARTER = this.findLCMOfAllNoteDenomsAcrossVoices() * this.header.getDefaultNoteLength().getDenom() * 3;
 
+        System.out.println(this.header);
+        
 		int tempo = (this.header.getTempo() * this.header.getDefaultNoteLength().getNumer() * 4)/(this.header.getDefaultNoteLength().getDenom());
 		SequencePlayer sequencePlayer = new SequencePlayer(tempo, NUM_TICKS_PER_QUARTER);
 		for (Voice voice : voices) {

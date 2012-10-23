@@ -58,7 +58,6 @@ public class Note implements Playable
     	int denom = this.noteLength.getDenom();
     	int defaultDenom = defaultNoteLength.getDenom(); 
     	int defaultNum = defaultNoteLength.getNumer(); 
-    	//int time = (defaultDenom * denom)/(4 * defaultNum * numer);
     	int ticks = (numer * 4 * numTicks * defaultNum)/(denom * defaultDenom);
     	
     	Pitch notePitch;

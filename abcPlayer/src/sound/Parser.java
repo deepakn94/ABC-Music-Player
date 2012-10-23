@@ -391,7 +391,6 @@ public class Parser {
 	    	if (lengthMatcher.group(1) != null) {
 	    		String[] rational = length.split("/");
 	    		if (rational.length == 2) {
-	    			System.out.println(length);
 	    			return new RatNum(Integer.parseInt(rational[0]), Integer.parseInt(rational[1]));
 	    		}
 	    		throw new IllegalArgumentException("Should not reach here");
