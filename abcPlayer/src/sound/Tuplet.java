@@ -37,8 +37,9 @@ public class Tuplet implements Playable
 		int ticks = startTicks;
 		for (Note note:notes) {
 			sequencePlayerNotes.addAll(note.play(ticks, numTicks, defaultNoteLength));
-			ticks += (numTicks * note.getLength().getNumer() * defaultNoteLength.getNumer() * 4)/
+			int noteTicks = (numTicks * note.getLength().getNumer() * defaultNoteLength.getNumer() * 4)/
 			        (note.getLength().getDenom() * defaultNoteLength.getDenom());
+			ticks += noteTicks;
 		}
 		return sequencePlayerNotes;
 	}

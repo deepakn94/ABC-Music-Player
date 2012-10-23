@@ -13,7 +13,6 @@ package sound;
  * Key
  * Index Number
  * Length
- * End of Header
  * 
  * 
  * BodyTokens -->
@@ -21,11 +20,15 @@ package sound;
  * Note
  * Rest
  * Chords
- * Tuplets
- * Repeats
+ * Doublets
+ * Triplets
+ * Quadruplets
+ * Repeat-first ending
+ * Repeat-second ending
+ * Start repeat
+ * End repeat
  * Barlines
- * Change of voice token
- * End of line
+ * End of piece
  * 
  */
 public class Token {

@@ -2,6 +2,8 @@ package sound;
 
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 import javax.sound.midi.InvalidMidiDataException;
 import javax.sound.midi.MidiUnavailableException;
 
@@ -12,6 +14,7 @@ public class SequencePlayerTest {
 	@Test
 	public void testSamplePiece1() {
 		SequencePlayer player;
+		
 		try {
 			
 			player = new SequencePlayer(140, 12);
@@ -57,7 +60,25 @@ public class SequencePlayerTest {
 
 	        System.out.println(player);
 	        
-	        player.play();
+	        ABCFileReader file_reader = new ABCFileReader("sample_abc/piece1.abc");
+	        try {
+	            String content = file_reader.readContent();
+	            
+	            Lexer newLexer = new Lexer(content);
+	            Parser parser = new Parser(newLexer);
+	            
+	            Piece pieceToPlay = parser.Parse(); 
+	            try {
+	                String piece = pieceToPlay.play().toString();
+	                //assertEquals(piece,player.toString());
+	            } catch (MidiUnavailableException e) {
+	                e.printStackTrace();
+	            } catch (InvalidMidiDataException e) {
+	                e.printStackTrace();
+	            } 
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
 	        
 		} catch (MidiUnavailableException e) {
             fail(e.toString());
@@ -71,7 +92,7 @@ public class SequencePlayerTest {
         SequencePlayer player;
         try {
             
-            player = new SequencePlayer(200, 12);
+            player = new SequencePlayer(200, 48);
             
             // New measure
             
@@ -130,7 +151,7 @@ public class SequencePlayerTest {
             player.addNote(new Pitch('B').toMidiNote(), 270, 9);
             // Rest
 
-            System.out.println(player);
+            //System.out.println(player);
             
             player.play();
             
