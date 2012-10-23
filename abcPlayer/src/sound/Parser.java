@@ -114,14 +114,18 @@ public class Parser {
         if (voiceMappings.size() == 1)
         {
             currentVoiceName = (String) voiceMappings.keySet().toArray()[0];
+           
+            if (!indices.containsKey(currentVoiceName)) {         
+                int[] index = {0, 0, 0, 0}; // startIndex, endIndex, firstRepeatIndex, secondRepeatIndex
+                indices.put(currentVoiceName, index);
+            }
         }
         
         this.currentKeyMappings = new HashMap<NoteType, Accidental> (KEY_MAPPINGS.get(header.getKeySignature()));
 
-        
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
-  
+            
             // Body Tokens
             case NOTE:
                 voiceMappings.get(currentVoiceName).add(parseNote(tok.getTokenName()));
@@ -145,9 +149,9 @@ public class Parser {
                 this.currentKeyMappings = new HashMap<NoteType, Accidental>(KEY_MAPPINGS.get(header.getKeySignature())); 
                 break;
 
-            case VOICE:
-                
+            case VOICE:               
                 currentVoiceName = tok.getTokenName();
+                
                 if (!indices.containsKey(currentVoiceName)) {              
                     int[] index = {0, 0, 0, 0}; // startIndex, endIndex, firstRepeatIndex, secondRepeatIndex
                     indices.put(currentVoiceName, index);
@@ -159,14 +163,15 @@ public class Parser {
                 
                 break; 
             case END_REPEAT:
+                
                 int[] voiceIndices = indices.get(currentVoiceName);
                 voiceIndices[1] = voiceMappings.get(currentVoiceName).size();
                 
-                if (voiceIndices[2] != -1) {
+                if (voiceIndices[2] != 0) {
                     for (int i = voiceIndices[0]; i<voiceIndices[2]; i++) {
                         voiceMappings.get(currentVoiceName).add(voiceMappings.get(currentVoiceName).get(i));
                     }
-                    voiceIndices[2] = -1;
+                    voiceIndices[2] = 0;
                 }
                 else {
                     for (int i = voiceIndices[0]; i < voiceIndices[1]; i++) {
@@ -204,6 +209,7 @@ public class Parser {
     }
     
     public Note parseNote(String noteToken) {
+
         Accidental noteAccidental = getAccidental(noteToken);
         NoteType noteName = getNote(noteToken);
         int octave = getOctave(noteToken);
@@ -223,6 +229,7 @@ public class Parser {
         
         Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
                             : new Note(noteName, octave, noteLength, noteAccidental);
+
         return parsedNote;
     }
     final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]*/[0-9]*|[0-9]+)?";
@@ -433,6 +440,7 @@ public class Parser {
         
         Outer:
         while (true) {
+
             Token tok = lex.next(); 
             
             switch(tok.getTokenType()) {
@@ -516,6 +524,7 @@ public class Parser {
                         keySignature = helperMappings.get(keyText);
                     }
                     
+                    
                     break Outer;
                 
                 case LENGTH: 
@@ -523,7 +532,7 @@ public class Parser {
                     break;
                     
                 default:
-                	break;
+                	throw new RuntimeException("Unrecognized header token/key signature missing");
            
               
             }

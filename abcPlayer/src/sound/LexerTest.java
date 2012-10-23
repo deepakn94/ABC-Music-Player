@@ -87,4 +87,38 @@ public class LexerTest {
 		assertEquals(expectedTokenName, currentToken.getTokenName());
 	}
 	
+   @Test
+    public void testSimpleNote1() {
+        Lexer testLexer = new Lexer("C2");
+        TokenType expectedTokenType = TokenType.NOTE;
+        String expectedTokenName ="C2";
+        Token currentToken = testLexer.next();
+        assertEquals(expectedTokenType, currentToken.getTokenType());
+        assertEquals(expectedTokenName, currentToken.getTokenName());
+    }
+   
+   @Test
+   public void testSimpleNotes2() {
+       Lexer testLexer = new Lexer("C2 D6 | c B'");
+       String expectedTokenName ="C2 D6 | c B' ";
+       String tokenName = "";
+       for (int i=0; i<5; i++) {
+           Token currentToken = testLexer.next();
+           tokenName += currentToken.getTokenName() + " ";
+       }
+       assertEquals(expectedTokenName, tokenName);
+   }
+   
+   @Test
+   public void testNotes() {
+       Lexer testLexer = new Lexer("X:8628\nT:Some Bach Song\nC:Bach\nM:4/4\nL:1/16\nGceGcez");
+       String expectedTokenName ="8628 Some Bach Song Bach 4/4 1/16 G c e G c e z ";
+       String tokenName = "";
+       for (int i=0; i<12; i++) {
+           Token currentToken = testLexer.next();
+           tokenName += currentToken.getTokenName() + " ";
+       }
+       assertEquals(expectedTokenName, tokenName);
+   }
+	
 }

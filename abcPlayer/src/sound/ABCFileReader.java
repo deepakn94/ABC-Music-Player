@@ -39,7 +39,7 @@ public class ABCFileReader {
 		return result.toString();
 	}
 	
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 
 	    String file_name = "sample_abc/fur_elise.abc";
 
@@ -63,16 +63,16 @@ public class ABCFileReader {
 				e.printStackTrace();
 			} 
 			
-			/*Token currentToken = newLexer.next();
+			//Token currentToken = newLexer.next();
 			
-			while (currentToken.getTokenType()!=TokenType.END_OF_PIECE) {
-				System.out.println(currentToken.getTokenName() + ":" + currentToken.getTokenType());
-				currentToken = newLexer.next();
-			}*/
+			//while (currentToken.getTokenType()!=TokenType.END_OF_PIECE) {
+			//	System.out.println(currentToken.getTokenName() + ":" + currentToken.getTokenType());
+			//	currentToken = newLexer.next();
+			//}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
-	}
+	}*/
 }

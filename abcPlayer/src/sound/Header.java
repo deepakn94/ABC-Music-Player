@@ -73,12 +73,12 @@ public class Header
     }
     
     public String toString() {
-    	String result = "Title : " + title + "\n";
+        String result = "Index Number : " + indexNumber + "\n";
+    	result += "Title : " + title + "\n";
     	result += "Composer : " + composer + "\n";
-    	result += "Key Signature : " + keySignature + "\n";
-    	result += "Index Number : " + indexNumber + "\n";
     	result += "Note length : " + noteLength + "\n";
     	result += "Tempo : " + tempo + "\n";
+        result += "Key Signature : " + keySignature + "\n";
     	return result;
     }
 }
