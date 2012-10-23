@@ -15,9 +15,6 @@ import sound.Piece;
  */
 public class Main {
 
-    public static void main(String[] args) {
-        play("sample_abc/fur_elise.abc");
-    }
 	/**
 	 * Plays the input file using Java MIDI API and displays
 	 * header information to the standard output stream.
@@ -37,7 +34,7 @@ public class Main {
             Parser parser = new Parser(newLexer);
             
             Piece pieceToPlay = parser.Parse(); 
-            //System.out.println(pieceToPlay);
+            System.out.println(pieceToPlay.getHeader());
             try {
                 pieceToPlay.play();
             } catch (MidiUnavailableException e) {
