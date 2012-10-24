@@ -92,7 +92,7 @@ public class SequencePlayerTest {
         SequencePlayer player;
         try {
             
-            player = new SequencePlayer(200, 48);
+            player = new SequencePlayer(200, 12);
             
             // New measure
             

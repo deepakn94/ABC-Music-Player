@@ -87,9 +87,9 @@ public class Lexer {
 	private static final Pattern REGEX = Pattern.compile(
 		"^(X\\s*:\\s*[0-9]+\n)" + //Field number
 		"|" + 
-		"(T\\s*:[A-Za-z .,0-9']+\n)" + //Field title
+		"(T\\s*:[^\n]+\n)" + //Field title
 		"|" +
-		"(C\\s*:[A-Za-z .,0-9']+\n)" + //Composer name
+		"(C\\s*:[^\n]+\n)" + //Composer name
 		"|" +
 		"(Q\\s*:\\s*[0-9]+\n)" + //Tempo
 		"|" +
@@ -97,7 +97,7 @@ public class Lexer {
 		"|" +
 		"(M\\s*:\\s*C\\||M:C|M:[0-9]+/[0-9]+\n)" + //Meter
 		"|" +
-		"(V\\s*:[A-Za-z .,0-9]+\n)" + //Voice
+		"(V\\s*:[^\n]+\n)" + //Voice
 		"|" +
 		"(K\\s*:\\s*[a-gA-G][#b]?m?\n)" + //Key
 		"|" +
