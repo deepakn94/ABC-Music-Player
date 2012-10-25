@@ -192,7 +192,7 @@ public class Parser {
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
             
-            // Body Tokens
+            // For each token, add the object that correspond to that token to Piece
             case NOTE:
                 voiceMappings.get(currentVoiceName).add(parseNote(tok.getTokenName()));
                 break;
@@ -206,7 +206,6 @@ public class Parser {
                 voiceMappings.get(currentVoiceName).add(parseDuplet(tok.getTokenName()));
                 break;
             case TRIPLET:
-                System.out.println("Hi!" + tok.getTokenName());
                 voiceMappings.get(currentVoiceName).add(parseTriplet(tok.getTokenName()));
                 break;
             case QUADRUPLET:
@@ -215,10 +214,10 @@ public class Parser {
             case BARLINE:
                 this.currentKeyMappings = new HashMap<SimpleNote, Accidental>(); 
                 break;
-
             case VOICE:               
                 currentVoiceName = tok.getTokenName();
                 
+                // If first instance of voice, initialize the index to keep track of repeats
                 if (!indices.containsKey(currentVoiceName)) {              
                     int[] index = {0, 0, 0, 0}; // startIndex, endIndex, firstRepeatIndex, secondRepeatIndex
                     indices.put(currentVoiceName, index);
@@ -226,11 +225,11 @@ public class Parser {
 
                 break;
             case START_REPEAT:
-                indices.get(currentVoiceName)[0] = voiceMappings.get(currentVoiceName).size();
-                
+                // Map the index of where to start repeating to that voice
+                indices.get(currentVoiceName)[0] = voiceMappings.get(currentVoiceName).size();       
                 break; 
             case END_REPEAT:
-                
+                // Add notes that range from the start index to the end index to Piece to simulate a repeat.
                 int[] voiceIndices = indices.get(currentVoiceName);
                 voiceIndices[1] = voiceMappings.get(currentVoiceName).size();
                 
@@ -246,12 +245,13 @@ public class Parser {
                     }
                 }                 
                 break; 
-            case REPEAT_FIRST_ENDING:    
+            case REPEAT_FIRST_ENDING:
+                // Keeps track of the location of the first ending
                 indices.get(currentVoiceName)[2] = voiceMappings.get(currentVoiceName).size();          
                 break;
             case REPEAT_SECOND_ENDING:
-                indices.get(currentVoiceName)[3] = voiceMappings.get(currentVoiceName).size();
-                
+                // Usually this is unnecessary if it always follows the repeat signal
+                indices.get(currentVoiceName)[3] = voiceMappings.get(currentVoiceName).size();             
                 break;          
             default:
                 throw new RuntimeException("Unrecognized token!");
@@ -275,6 +275,11 @@ public class Parser {
         return rest;
     }
     
+    /*
+     * These parse methods below are pretty straightforward. They take in a 
+     * noteToken string passed by the Parse method, initializes and returns the 
+     * corresponding Object.
+     */
     public Note parseNote(String noteToken) {
 
         Accidental noteAccidental = getAccidental(noteToken);
@@ -286,21 +291,14 @@ public class Parser {
         
         if (noteAccidental == Accidental.ABSENT)
         {
-            if (currentKeyMappings.containsKey(simpleNote)) {
-                noteAccidental = currentKeyMappings.get(simpleNote);
-            }
-            
+            if (currentKeyMappings.containsKey(simpleNote)) 
+                noteAccidental = currentKeyMappings.get(simpleNote);  
             else if (this.thisKeyMappings.containsKey(noteName))
-            {
                 noteAccidental = this.thisKeyMappings.get(noteName);
-            }
         }
         
         else
-        {
-            currentKeyMappings.put(simpleNote, noteAccidental);
-        }
-        
+            currentKeyMappings.put(simpleNote, noteAccidental);       
         Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
                             : new Note(noteName, octave, noteLength, noteAccidental);
 
@@ -331,6 +329,7 @@ public class Parser {
         
         while (noteMatcher.find(index)) {
             Note dupletNote = parseNote(noteMatcher.group(0));
+            // Note length should be 3/2 of the original length for a duplet
             RatNum newNoteLength = new RatNum(dupletNote.getLength().getNumer()*3, dupletNote.getLength().getDenom()*2);
             dupletNote.setNoteLength(newNoteLength);
             duplet.add(dupletNote);
@@ -351,6 +350,7 @@ public class Parser {
         
         while (noteMatcher.find(index)) {
             Note tripletNote = parseNote(noteMatcher.group(0));
+            // Note length should be 2/3 of the original length for a triplet
             RatNum newNoteLength = new RatNum(tripletNote.getLength().getNumer()*2, tripletNote.getLength().getDenom()*3);
             tripletNote.setNoteLength(newNoteLength);
             triplet.add(tripletNote);
@@ -371,6 +371,7 @@ public class Parser {
         
         while (noteMatcher.find(index)) {
             Note quadrupletNote = parseNote(noteMatcher.group(0));
+            // Note length should be 3/4 of the original length for a duplet
             RatNum newNoteLength = new RatNum(quadrupletNote.getLength().getNumer()*3, quadrupletNote.getLength().getDenom()*4);
             quadrupletNote.setNoteLength(newNoteLength);
             quadruplet.add(quadrupletNote);
