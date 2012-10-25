@@ -61,52 +61,112 @@ public class Parser {
         KEY_MAPPINGS.put(Key.D_MAJOR, map); 
         KEY_MAPPINGS.put(Key.B_MINOR, new HashMap<NoteType, Accidental>(map));
         
-        //G minor 
+        //B flat major and G minor 
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.B, Accidental.FLAT);
         map.put(NoteType.E, Accidental.FLAT);
         KEY_MAPPINGS.put(Key.G_MINOR, map); 
+        KEY_MAPPINGS.put(Key.B_FLAT_MAJOR, new HashMap<NoteType, Accidental>(map));
         
-        //A major 
+        //A major and F# Minor
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.C, Accidental.SHARP);
         map.put(NoteType.F, Accidental.SHARP);
         map.put(NoteType.G,  Accidental.SHARP);
         KEY_MAPPINGS.put(Key.A_MAJOR, map); 
+        KEY_MAPPINGS.put(Key.F_SHARP_MINOR, new HashMap<NoteType, Accidental>(map));
         
-        //C minor
+        //C minor and E flat major
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.A, Accidental.FLAT);
         map.put(NoteType.B, Accidental.FLAT);
         map.put(NoteType.E, Accidental.FLAT);
         KEY_MAPPINGS.put(Key.C_MINOR, map); 
+        KEY_MAPPINGS.put(Key.E_FLAT_MAJOR, new HashMap<NoteType, Accidental>(map));
         
-        //E major
+        //E major and C# minor
         map = new HashMap<NoteType, Accidental>(); 
         map.put(NoteType.C, Accidental.SHARP);
         map.put(NoteType.D, Accidental.SHARP);
         map.put(NoteType.F, Accidental.SHARP);
         map.put(NoteType.G, Accidental.SHARP);
         KEY_MAPPINGS.put(Key.E_MAJOR, map);
+        KEY_MAPPINGS.put(Key.C_SHARP_MINOR, new HashMap<NoteType, Accidental>(map));
         
-        //F minor
+        //F minor and A flat major
         map = new HashMap<NoteType, Accidental>();
         map.put(NoteType.A, Accidental.FLAT);
         map.put(NoteType.B, Accidental.FLAT);
         map.put(NoteType.D, Accidental.FLAT);
         map.put(NoteType.E, Accidental.FLAT);
-        KEY_MAPPINGS.put(Key.F_MINOR, map); 
+        KEY_MAPPINGS.put(Key.F_MINOR, map);
+        KEY_MAPPINGS.put(Key.A_FLAT_MAJOR, new HashMap<NoteType, Accidental>(map));
         
-        //B major
+        //B major and G# minor 
         map = new HashMap<NoteType, Accidental>();
         map.put(NoteType.A, Accidental.SHARP);
         map.put(NoteType.C, Accidental.SHARP);
         map.put(NoteType.D, Accidental.SHARP);
         map.put(NoteType.F, Accidental.SHARP);
         map.put(NoteType.G, Accidental.SHARP);
-        KEY_MAPPINGS.put(Key.B_MAJOR, map);  
+        KEY_MAPPINGS.put(Key.B_MAJOR, map); 
+        KEY_MAPPINGS.put(Key.G_SHARP_MINOR, new HashMap<NoteType, Accidental>(map));
         
-        //NEED TO ADD MAPPINGS FOR OTHER UNUSUAL KEYS
+        //D flat major and B flat minor 
+        map = new HashMap<NoteType, Accidental>();
+        map.put(NoteType.G, Accidental.FLAT);
+        map.put(NoteType.A, Accidental.FLAT);
+        map.put(NoteType.B, Accidental.FLAT);
+        map.put(NoteType.D, Accidental.FLAT);
+        map.put(NoteType.E, Accidental.FLAT);
+        KEY_MAPPINGS.put(Key.D_FLAT_MAJOR, map); 
+        KEY_MAPPINGS.put(Key.B_FLAT_MINOR, new HashMap<NoteType, Accidental>(map));
+        
+        //F# Major and D# Minor
+        map = new HashMap<NoteType, Accidental>();
+        map.put(NoteType.A, Accidental.SHARP);
+        map.put(NoteType.C, Accidental.SHARP);
+        map.put(NoteType.D, Accidental.SHARP);
+        map.put(NoteType.E, Accidental.SHARP);
+        map.put(NoteType.F, Accidental.SHARP);
+        map.put(NoteType.G, Accidental.SHARP);
+        KEY_MAPPINGS.put(Key.F_SHARP_MAJOR, map); 
+        KEY_MAPPINGS.put(Key.D_SHARP_MINOR, new HashMap<NoteType, Accidental>(map));
+        
+        //G flat Major and E flat minor 
+        map = new HashMap<NoteType, Accidental>();
+        map.put(NoteType.G, Accidental.FLAT);
+        map.put(NoteType.A, Accidental.FLAT);
+        map.put(NoteType.B, Accidental.FLAT);
+        map.put(NoteType.C, Accidental.FLAT);
+        map.put(NoteType.D, Accidental.FLAT);
+        map.put(NoteType.E, Accidental.FLAT);
+        KEY_MAPPINGS.put(Key.G_FLAT_MAJOR, map); 
+        KEY_MAPPINGS.put(Key.E_FLAT_MINOR, new HashMap<NoteType, Accidental>(map));
+        
+        //C# major and A# minor
+        map = new HashMap<NoteType, Accidental>();
+        map.put(NoteType.A, Accidental.SHARP);
+        map.put(NoteType.B, Accidental.SHARP);
+        map.put(NoteType.C, Accidental.SHARP);
+        map.put(NoteType.D, Accidental.SHARP);
+        map.put(NoteType.E, Accidental.SHARP);
+        map.put(NoteType.F, Accidental.SHARP);
+        map.put(NoteType.G, Accidental.SHARP);
+        KEY_MAPPINGS.put(Key.C_SHARP_MAJOR, map); 
+        KEY_MAPPINGS.put(Key.A_SHARP_MINOR, new HashMap<NoteType, Accidental>(map));
+        
+        //C flat major and A flat minor 
+        map = new HashMap<NoteType, Accidental>();
+        map.put(NoteType.F, Accidental.FLAT);
+        map.put(NoteType.G, Accidental.FLAT);
+        map.put(NoteType.A, Accidental.FLAT);
+        map.put(NoteType.B, Accidental.FLAT);
+        map.put(NoteType.C, Accidental.FLAT);
+        map.put(NoteType.D, Accidental.FLAT);
+        map.put(NoteType.E, Accidental.FLAT);
+        KEY_MAPPINGS.put(Key.C_FLAT_MAJOR, map); 
+        KEY_MAPPINGS.put(Key.A_FLAT_MINOR, new HashMap<NoteType, Accidental>(map));
     }
     
     public Piece Parse()
@@ -513,21 +573,22 @@ public class Parser {
                     helperMappings.put("Gm", Key.G_MINOR);
                     
                     //Other keys 
-                    helperMappings.put("B_", Key.B_FLAT_MAJOR); 
-                    helperMappings.put("F^m", Key.F_SHARP_MINOR);
-                    helperMappings.put("E_", Key.E_FLAT_MAJOR);
-                    helperMappings.put("C^m", Key.C_SHARP_MINOR);
-                    helperMappings.put("A_", Key.A_FLAT_MAJOR);
-                    helperMappings.put("G^m", Key.G_SHARP_MINOR);
-                    helperMappings.put("D_", Key.D_FLAT_MAJOR);
-                    
-                    helperMappings.put("B_m", Key.B_FLAT_MINOR); 
-                    helperMappings.put("F^", Key.F_SHARP_MAJOR);
-                    helperMappings.put("D^", Key.D_SHARP_MAJOR);
-                    helperMappings.put("G_", Key.G_FLAT_MAJOR);
-                    helperMappings.put("E_m", Key.E_FLAT_MINOR);
-                    helperMappings.put("C_", Key.C_FLAT_MAJOR);
-                    helperMappings.put("A_m", Key.A_FLAT_MINOR);
+                    helperMappings.put("Bb", Key.B_FLAT_MAJOR); 
+                    helperMappings.put("F#m", Key.F_SHARP_MINOR);
+                    helperMappings.put("Eb", Key.E_FLAT_MAJOR);
+                    helperMappings.put("C#m", Key.C_SHARP_MINOR);
+                    helperMappings.put("Ab", Key.A_FLAT_MAJOR);
+                    helperMappings.put("G#m", Key.G_SHARP_MINOR);
+                    helperMappings.put("Db", Key.D_FLAT_MAJOR);
+                    helperMappings.put("Bbm", Key.B_FLAT_MINOR); 
+                    helperMappings.put("F#", Key.F_SHARP_MAJOR);
+                    helperMappings.put("D#m", Key.D_SHARP_MINOR);
+                    helperMappings.put("Gb", Key.G_FLAT_MAJOR);
+                    helperMappings.put("Ebm", Key.E_FLAT_MINOR);
+                    helperMappings.put("C#",  Key.C_SHARP_MAJOR);
+                    helperMappings.put("A#m",  Key.A_SHARP_MINOR);
+                    helperMappings.put("Cb", Key.C_FLAT_MAJOR);
+                    helperMappings.put("Abm", Key.A_FLAT_MINOR);
                    
                     String keyText = tok.getTokenName().trim(); 
                     if (!helperMappings.containsKey(keyText)) {
