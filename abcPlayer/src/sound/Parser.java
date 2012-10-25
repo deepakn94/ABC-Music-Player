@@ -505,7 +505,7 @@ public class Parser {
         String composerName = null; 
         Integer tempo = null; 
         RatNum defaultNoteLength = null;
-        //NEED TO ADD ONE FOR METER
+        String meter = null;
         
         //Last field must be the key 
         Key keySignature = null;
@@ -539,7 +539,7 @@ public class Parser {
                     break;
                 
                 case METER: 
-                    //Need to handle this
+                    meter = tok.getTokenName(); 
                     break;
                 
                 case TEMPO: 
@@ -637,6 +637,16 @@ public class Parser {
             headerToReturn.setNoteLength(defaultNoteLength);
         } else {
             headerToReturn.setNoteLength(Header.DEFAULT_NOTE_LENGTH);
+        }
+        
+        if (meter != null)
+        {
+            headerToReturn.setMeter(meter); 
+        }
+        
+        else 
+        {
+            headerToReturn.setMeter(Header.DEFAULT_METER);
         }
         
         if (voiceMappings.entrySet().isEmpty()) {
