@@ -109,16 +109,16 @@ public class ParserTest {
     }
     
     @Test
-    public void TwoVoices() {
-        String header = "X:1\nT:Simple scale\nC:Unknown\nQ:120\nV:1\nV:2\nK:C\n";
+    public void ThreeVoices() {
+        String header = "X:1\nT:Simple scale\nC:Unknown\nQ:120\nV:1\nV:2\nV:3\nK:C\n";
         String header_output = "Index Number : 1\nTitle : Simple scale\nComposer : Unknown\nNote length : 1/8\nTempo : 120\n" +
-            "Key Signature : C_MAJOR\nVoice(1)\nVoice(2)\n";
-        String test1 = "EFGABCDe";    
+            "Key Signature : C_MAJOR\n";
+        String test1 = "V:1\nAB\nV:2\nCD\nV:3\nE2";    
         Lexer lex = new Lexer(header + test1);       
         Parser parser1 = new Parser(lex);
         Piece pieceToPlay = parser1.Parse(); 
-        String output1 = header_output + "Note(E 0 1/1 ABSENT)\nNote(F 0 1/1 SHARP)\nNote(G 0 1/1 SHARP)\nNote(A 0 1/1 ABSENT)\n"
-                + "Note(B 0 1/1 ABSENT)\nNote(C 0 1/1 SHARP)\nNote(D 0 1/1 SHARP)\nNote(E 1 1/1 ABSENT)\n";
+        String output1 = header_output + "Voice(3)\nNote(E 0 2/1 ABSENT)\n" + "Voice(2)\nNote(C 0 1/1 ABSENT)\nNote(D 0 1/1 ABSENT)\n" +
+            "Voice(1)\nNote(A 0 1/1 ABSENT)\nNote(B 0 1/1 ABSENT)\n";      		
         assertEquals(output1, pieceToPlay.toString());
     }
     
@@ -148,5 +148,16 @@ public class ParserTest {
         Parser parser1 = new Parser(lex);
         parser1.Parse(); 
     } 
+    
+    // Created multiple voices, but did not specify which one to play
+    @Test(expected=RuntimeException.class)
+    public void UnrecognizedVoice() {
+        String header = "X:1\nT:Simple scale\nC:Unknown\nQ:120\nV:1\nV:2\nK:C\n";
+        String test1 = "EFGABCDe";    
+        Lexer lex = new Lexer(header + test1);       
+        Parser parser1 = new Parser(lex);
+        parser1.Parse(); 
+    }
+    
 
 }

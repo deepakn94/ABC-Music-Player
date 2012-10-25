@@ -217,6 +217,9 @@ public class Parser {
             case VOICE:               
                 currentVoiceName = tok.getTokenName();
                 
+                if (!voiceMappings.containsKey(currentVoiceName))
+                    throw new RuntimeException("Voice " + currentVoiceName + " not recognized");
+                
                 // If first instance of voice, initialize the index to keep track of repeats
                 if (!indices.containsKey(currentVoiceName)) {              
                     int[] index = {0, 0, 0, 0}; // startIndex, endIndex, firstRepeatIndex, secondRepeatIndex
@@ -269,7 +272,7 @@ public class Parser {
         return new Piece(voicesInPiece, header);
     }
   
-    public Rest parseRest(String noteToken) {
+    private Rest parseRest(String noteToken) {
         RatNum restLength = getLength(noteToken);
         Rest rest = new Rest(restLength);
         return rest;
@@ -280,7 +283,7 @@ public class Parser {
      * noteToken string passed by the Parse method, initializes and returns the 
      * corresponding Object.
      */
-    public Note parseNote(String noteToken) {
+    private Note parseNote(String noteToken) {
 
         Accidental noteAccidental = getAccidental(noteToken);
         NoteType noteName = getNote(noteToken);
@@ -306,7 +309,7 @@ public class Parser {
     }
     final String NOTE_EXPRESSION = "(__?|\\^\\^?|=)?[A-Ga-g]['+,+]*([0-9]*/[0-9]*|[0-9]+)?";
     
-    public Chord parseChord(String noteToken) {
+    private Chord parseChord(String noteToken) {
         List<Note> chords = new ArrayList<Note>();
         
         Pattern chordPattern = Pattern.compile(NOTE_EXPRESSION);
@@ -320,7 +323,7 @@ public class Parser {
         return new Chord(chords);
     }
     
-    public Tuplet parseDuplet(String noteToken) {
+    private Tuplet parseDuplet(String noteToken) {
         List<Note> duplet = new ArrayList<Note>();
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
@@ -341,7 +344,7 @@ public class Parser {
         return new Tuplet(TupletType.DUPLET, duplet);
     }
 
-    public Tuplet parseTriplet(String noteToken) {
+    private Tuplet parseTriplet(String noteToken) {
         List<Note> triplet = new ArrayList<Note>();
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
@@ -362,7 +365,7 @@ public class Parser {
         return new Tuplet(TupletType.TRIPLET, triplet);
     }
     
-    public Tuplet parseQuadruplet(String noteToken) {
+    private Tuplet parseQuadruplet(String noteToken) {
         List<Note> quadruplet = new ArrayList<Note>();
 
         Pattern notePattern = Pattern.compile(NOTE_EXPRESSION);
