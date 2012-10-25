@@ -31,6 +31,10 @@ package sound;
  * End of piece
  * 
  */
+
+/**
+ * Represents a token used by the Lexer when breaking down the initial data. 
+ */
 public class Token {
 	public static enum TokenType {
 		//Header Tokens
@@ -61,6 +65,11 @@ public class Token {
 	private String tokenName;
 	private TokenType tokenType;
 	
+	/**
+	 * Initializes a new token with the specified data. 
+	 * @param tokenName - must not be null
+	 * @param tokenType - must not be null 
+	 */
 	public Token(String tokenName, TokenType tokenType) {
 		this.tokenName = tokenName;
 		this.tokenType = tokenType;

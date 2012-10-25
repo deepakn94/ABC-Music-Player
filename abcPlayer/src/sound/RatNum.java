@@ -1,10 +1,20 @@
 package sound;
 
+/**
+ * Represents a reduced fraction of positive integers. 
+ * @author Arjun
+ *
+ */
 public class RatNum 
 {
     private final int numer; 
     private final int denom; 
     
+    /**
+     * Creates a new immutable Rational Number object from both a numerator and a denomator
+     * @param numer  must be greater than or equal to 0
+     * @param denom  must be greater than 0
+     */
     public RatNum(int numer, int denom)
     {
         if (denom == 0)
@@ -16,11 +26,16 @@ public class RatNum
         this.denom = denom/gcd; 
     }
     
+    /**
+     * Creates a new immutable Rational Number object from an integer
+     * @param numer  must be greater than or equal to 0
+     */
     public RatNum(int numer)
     {
-        this.numer = numer; 
-        this.denom = 1;
+        this(numer, 1);
     }
+    
+    //Note: The following methods are trivial and do not need to be specced. 
     
     public int getNumer()
     {

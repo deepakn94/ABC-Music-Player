@@ -98,12 +98,12 @@ public class Note implements Playable
     
     /**
      * Converts the note into a form that a Piece can use to build itself. 
-     * @param startTicks - the tick value that the final SequencePlayer will begin playing this chord at
+     * @param startTicks - the tick value that the final SequencePlayer will begin playing this note at
      *                     must be nonnegative  
      * @param numTicks - the number of ticks the final SequencePlayer allocates for a default length note 
      *                      must be nonnegative 
      * @param defaultNoteLength - the length of a default note in the piece, must be non-null
-     * @return a List of SequencePlayerNotes containing only one instance. This instance describes the start ticks and num ticks values for the note.
+     * @return a List of SequencePlayerNotes containing data needed to play this note (the start ticks and the duration of the ticks)
      */
     public List<SequencePlayerNote> play(int startTicks, int numTicks, RatNum defaultNoteLength) {
     	List<SequencePlayerNote> sequencePlayerNotes = new ArrayList<SequencePlayerNote> ();
