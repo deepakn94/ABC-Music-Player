@@ -146,6 +146,7 @@ public class Parser {
                 voiceMappings.get(currentVoiceName).add(parseDuplet(tok.getTokenName()));
                 break;
             case TRIPLET:
+                System.out.println("Hi!" + tok.getTokenName());
                 voiceMappings.get(currentVoiceName).add(parseTriplet(tok.getTokenName()));
                 break;
             case QUADRUPLET:
