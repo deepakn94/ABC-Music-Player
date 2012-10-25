@@ -20,7 +20,7 @@ public class Chord implements Playable
     public String toString() {
         String s = "Chord(";
         for (Note n : this.notes)
-            s = s + n.toString() + " ";
+            s = s + n.toString();
         s= s.trim() + ")";
         return s;
         
