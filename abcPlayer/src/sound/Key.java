@@ -30,7 +30,7 @@ public enum Key
     D_FLAT_MAJOR, 
     B_FLAT_MINOR, 
     F_SHARP_MAJOR, 
-    D_SHARP_MAJOR, 
+    D_SHARP_MINOR, 
     G_FLAT_MAJOR, 
     E_FLAT_MINOR, 
     C_SHARP_MAJOR, 

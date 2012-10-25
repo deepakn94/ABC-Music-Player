@@ -11,15 +11,16 @@ public class Header
     private String composer;
     private RatNum noteLength; 
     private int tempo;  
+    private String meter;
     
     //Default header field values 
     public static final int DEFAULT_TEMPO = 100;
     public static final RatNum DEFAULT_NOTE_LENGTH = new RatNum(1, 8);
     public static final String DEFAULT_COMPOSER_VAL = "UNSPECIFIED";
+    public static final String DEFAULT_METER = "4/4"; 
     
     public Header(String title, Key keySignature, int indexNumber)
     {
-      
         this.title = title; 
         this.indexNumber = indexNumber; 
         this.keySignature = keySignature; 
@@ -72,6 +73,7 @@ public class Header
         this.tempo = tempo;
     }
     
+    @Override 
     public String toString() {
         String result = "Index Number : " + indexNumber + "\n";
     	result += "Title : " + title + "\n";
@@ -80,5 +82,13 @@ public class Header
     	result += "Tempo : " + tempo + "\n";
         result += "Key Signature : " + keySignature + "\n";
     	return result;
+    }
+
+    public String getMeter() {
+        return meter;
+    }
+
+    public void setMeter(String meter) {
+        this.meter = meter;
     }
 }
