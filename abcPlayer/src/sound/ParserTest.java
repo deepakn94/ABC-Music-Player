@@ -2,6 +2,9 @@ package sound;
 
 import static org.junit.Assert.*;
 
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MidiUnavailableException;
+
 import org.junit.Test;
 
 public class ParserTest {
@@ -56,7 +59,4 @@ public class ParserTest {
         Parser parser1 = new Parser(lex);
         parser1.Parse(); 
     }
-    
-
-
 }

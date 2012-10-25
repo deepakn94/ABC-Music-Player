@@ -21,9 +21,11 @@ public class Parser {
     public final static HashMap<Key, HashMap<NoteType, Accidental>> KEY_MAPPINGS = 
             new HashMap<Key, HashMap<NoteType, Accidental>>();
     
+    private HashMap<NoteType, Accidental> thisKeyMappings;
+    
     private final HashMap<String, List<Playable>> voiceMappings;
    
-    private HashMap<NoteType, Accidental> currentKeyMappings;
+    private HashMap<SimpleNote, Accidental> currentKeyMappings;
 
     private HashMap<String, int[]> indices;
     
@@ -110,6 +112,10 @@ public class Parser {
     public Piece Parse()
     {
         Header header = this.parseHeader();
+        
+        //Clone just for safety, this dictionary should not change. 
+        this.thisKeyMappings = new HashMap<NoteType, Accidental>(KEY_MAPPINGS.get(header.getKeySignature()));
+                
         String currentVoiceName = null;
         if (voiceMappings.size() == 1)
         {
@@ -121,7 +127,7 @@ public class Parser {
             }
         }
         
-        this.currentKeyMappings = new HashMap<NoteType, Accidental> (KEY_MAPPINGS.get(header.getKeySignature()));
+        this.currentKeyMappings = new HashMap<SimpleNote, Accidental>();
 
         for (Token tok = this.lex.next(); tok.getTokenType() != Token.TokenType.END_OF_PIECE; tok = this.lex.next()) {
             switch (tok.getTokenType()) {
@@ -146,7 +152,7 @@ public class Parser {
                 voiceMappings.get(currentVoiceName).add(parseQuadruplet(tok.getTokenName()));
                 break;
             case BARLINE:
-                this.currentKeyMappings = new HashMap<NoteType, Accidental>(KEY_MAPPINGS.get(header.getKeySignature())); 
+                this.currentKeyMappings = new HashMap<SimpleNote, Accidental>(); 
                 break;
 
             case VOICE:               
@@ -215,16 +221,23 @@ public class Parser {
         int octave = getOctave(noteToken);
         RatNum noteLength = getLength(noteToken);
         
+        SimpleNote simpleNote = new SimpleNote(noteName, octave);
+        
         if (noteAccidental == Accidental.ABSENT)
         {
-            if (currentKeyMappings.containsKey(noteName)) {
-                noteAccidental = currentKeyMappings.get(noteName);
-            }   
+            if (currentKeyMappings.containsKey(simpleNote)) {
+                noteAccidental = currentKeyMappings.get(simpleNote);
+            }
+            
+            else if (this.thisKeyMappings.containsKey(noteName))
+            {
+                noteAccidental = this.thisKeyMappings.get(noteName);
+            }
         }
         
         else
         {
-            currentKeyMappings.put(noteName, noteAccidental);
+            currentKeyMappings.put(simpleNote, noteAccidental);
         }
         
         Note parsedNote = (noteAccidental == Accidental.ABSENT) ? new Note(noteName, octave, noteLength) 
@@ -297,7 +310,7 @@ public class Parser {
         
         while (noteMatcher.find(index)) {
             Note quadrupletNote = parseNote(noteMatcher.group(0));
-            RatNum newNoteLength = new RatNum(quadrupletNote.getLength().getNumer()*2, quadrupletNote.getLength().getDenom()*3);
+            RatNum newNoteLength = new RatNum(quadrupletNote.getLength().getNumer()*3, quadrupletNote.getLength().getDenom()*4);
             quadrupletNote.setNoteLength(newNoteLength);
             quadruplet.add(quadrupletNote);
             index = noteMatcher.end();
