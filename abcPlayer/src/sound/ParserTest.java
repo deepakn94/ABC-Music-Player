@@ -86,6 +86,19 @@ public class ParserTest {
         String output1 = DEFAULT_HEADER_OUTPUT + "Note(A 0 1/1 ABSENT)\nNote(B 0 1/1 ABSENT)\n";
         assertEquals(output1, pieceToPlay.toString());
     }
+    
+    @Test
+    public void testSameNoteDifferentPitchesWithAccidental()
+    {
+        String test1 = "X:10240\nT:A bad song\nL:1/4\nK:G\n =fFFf | fF";    
+        Lexer lex = new Lexer(test1);       
+        Parser parser1 = new Parser(lex);
+        Piece p = parser1.Parse();
+        String output1 = "Index Number : 10240\nTitle : A bad song\nComposer : Unspecified\nNote length : 1/4\nTempo : 100\nKey Signature : G_MAJOR\n" +
+                "Voice(DEFAULT_VOICE)\nNote(F 1 1/1 NATURAL)\nNote(F 0 1/1 SHARP)\nNote(F 0 1/1 SHARP)\nNote(F 1 1/1 NATURAL)\nNote(F 1 1/1 SHARP)\n"
+                + "Note(F 0 1/1 SHARP)\n";
+        assertEquals(output1, p.toString());
+    }
 
     
     
