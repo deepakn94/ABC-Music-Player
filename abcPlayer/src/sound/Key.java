@@ -1,5 +1,9 @@
 package sound;
 
+/**
+ * Represents the key signature of a piece. Included all major and minor keys on the website: 
+ * http://en.wikipedia.org/wiki/Key_signatures
+ */
 public enum Key 
 {
     //Minor keys 
@@ -37,6 +41,5 @@ public enum Key
     A_SHARP_MINOR, 
     C_FLAT_MAJOR, 
     A_FLAT_MINOR
-    
-    
+
 }
