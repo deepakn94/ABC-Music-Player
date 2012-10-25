@@ -140,6 +140,7 @@ public class Parser {
                 voiceMappings.get(currentVoiceName).add(parseDuplet(tok.getTokenName()));
                 break;
             case TRIPLET:
+                System.out.println("Hi!" + tok.getTokenName());
                 voiceMappings.get(currentVoiceName).add(parseTriplet(tok.getTokenName()));
                 break;
             case QUADRUPLET:
@@ -297,7 +298,7 @@ public class Parser {
         
         while (noteMatcher.find(index)) {
             Note quadrupletNote = parseNote(noteMatcher.group(0));
-            RatNum newNoteLength = new RatNum(quadrupletNote.getLength().getNumer()*2, quadrupletNote.getLength().getDenom()*3);
+            RatNum newNoteLength = new RatNum(quadrupletNote.getLength().getNumer()*3, quadrupletNote.getLength().getDenom()*4);
             quadrupletNote.setNoteLength(newNoteLength);
             quadruplet.add(quadrupletNote);
             index = noteMatcher.end();

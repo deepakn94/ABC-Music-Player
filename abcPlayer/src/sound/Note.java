@@ -49,7 +49,7 @@ public class Note implements Playable
     @Override
     public String toString()
     {
-        return "Note(" + noteBase.toString() + " " + octavesAboveMiddleC + " " + noteLength.toString() + " " + accidental.toString() + ") ";
+        return "Note(" + noteBase.toString() + " " + octavesAboveMiddleC + " " + noteLength.toString() + " " + accidental.toString() + ")";
     }
     
     public List<SequencePlayerNote> play(int startTicks, int numTicks, RatNum defaultNoteLength) {
