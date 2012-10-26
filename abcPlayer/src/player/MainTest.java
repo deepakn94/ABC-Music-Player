@@ -6,7 +6,7 @@ public class MainTest {
 	
 	@Test
 	public void testBarbieGirl() {
-		Main.play("sample_abc/barbie_girl.abc");
+		Main.play("sample_abc/piece1.abc");
 	}
 
 	@Test
