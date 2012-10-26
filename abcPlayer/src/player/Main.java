@@ -9,6 +9,7 @@ import sound.ABCFileReader;
 import sound.Lexer;
 import sound.Parser;
 import sound.Piece;
+import sound.SequencePlayer;
 
 /**
  * Main entry point of your application.
@@ -36,16 +37,15 @@ public class Main {
             Piece pieceToPlay = parser.Parse(); 
             System.out.println(pieceToPlay.getHeader());
             try {
-                pieceToPlay.play();
+                SequencePlayer sp = pieceToPlay.play();
+                //System.out.println(sp.toString());
+                sp.play();
             } catch (MidiUnavailableException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } catch (InvalidMidiDataException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             } 
         } catch (IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 	}

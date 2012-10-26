@@ -78,7 +78,7 @@ public class Piece
 			    sequencePlayer.addNote(spn.getPitch().toMidiNote(), spn.getStartTicks(), spn.getNumTicks());
 			}
 		}
-		sequencePlayer.play();
+		//sequencePlayer.play();
 		return sequencePlayer;
     }
 }
