@@ -121,7 +121,7 @@ public class Lexer {
 		"|" +
 		"(\\[1\\s*)" + //Repeat first ending
 		"|" +
-		"(\\[2\\s*)"//Repeat second ending
+		"(\\[2\\s*)" //Repeat second ending
 		
 		, Pattern.DOTALL
 	);

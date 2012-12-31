@@ -1,9 +1,6 @@
 package sound;
 
-import static org.junit.Assert.*;
-
-import javax.sound.midi.InvalidMidiDataException;
-import javax.sound.midi.MidiUnavailableException;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 

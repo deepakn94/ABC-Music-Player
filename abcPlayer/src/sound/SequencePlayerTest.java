@@ -70,7 +70,7 @@ public class SequencePlayerTest {
 	            Piece pieceToPlay = parser.Parse(); 
 	            try {
 	                String piece = pieceToPlay.play().toString();
-	                //assertEquals(piece,player.toString());
+	                assertEquals(piece,player.toString());
 	            } catch (MidiUnavailableException e) {
 	                e.printStackTrace();
 	            } catch (InvalidMidiDataException e) {
